@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.0.4
+// @version      2.0.5
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
-// @iconURL      https://js.hclonely.com/favicon.ico
-// @homepage     https://blog.hclonely.com/forums/topic/255
-// @supportURL   https://ask.hclonely.com/question/create
-// @updateURL    https://js.hclonely.com/auto-task/auto-task.user.js
+// @iconURL      https://hclonely.github.io/auto-task/favicon.ico
+// @homepage     https://hclonely.github.io/auto-task/
+// @supportURL   https://github.com/HCLonely/auto-task/issues
+// @updateURL    https://hclonely.github.io/auto-task/auto-task.user.js
 // @include      *://giveaway.su/giveaway/view/*
 // @include      *://marvelousga.com/*
 // @include      *://dupedornot.com/*
@@ -27,12 +27,12 @@
 // @include      *://gleam.io/*
 // @include      *://www.spoune.com/index.php*
 // @exclude      *googleads*
-// @include      https://js.hclonely.com/auto-task/setting.html
-// @include      https://js.hclonely.com/auto-task/announcement.html
+// @include      https://hclonely.github.io/auto-task/setting.html
+// @include      https://hclonely.github.io/auto-task/announcement.html
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
-// @require      https://greasyfork.org/scripts/388035-$jQuery/code/$jQuery.js?version=736625
-// @resource     css https://greasyfork.org/scripts/394214-css-for-autotask/code/css%20for%20autoTask.user.css?ver=2.0.4
+// @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.5
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -49,7 +49,7 @@
 // @compatible   chrome >=58 没有测试其他浏览器的兼容性
 // ==/UserScript==
 
-(function($) {
+(function() {
     'use strict';
 
     GM_addStyle(GM_getResourceText('css'));
@@ -1025,7 +1025,7 @@
                     text: `<li>正在检测更新...<font></font></li>`
                 });
                 this.httpRequest({
-                    url: "https://js.hclonely.com/auto-task/version?t=" + new Date().getTime(),
+                    url: "https://hclonely.github.io/auto-task/version?t=" + new Date().getTime(),
                     method: "get",
                     dataType: "json",
                     onload: (response) => {
@@ -1039,7 +1039,7 @@
                             v.icon = "el-icon-download";
                             v.title = "立即更新至" + response.response.version;
                             v.checkUpdate = function() {
-                                window.open("https://js.hclonely.com/auto-task/auto-task.user.js", "_blank")
+                                window.open("https://hclonely.github.io/auto-task/auto-task.user.js", "_blank")
                             };
                             if (s) status.success("检测到新版本:" + response.response.version);
                             v.hidden = false;
@@ -1083,7 +1083,7 @@
                     text: `<li>正在获取更新公告...<font></font></li>`
                 });
                 this.httpRequest({
-                    url: "https://js.hclonely.com/auto-task/new.json?t=" + new Date().getTime(),
+                    url: "https://hclonely.github.io/auto-task/new.json?t=" + new Date().getTime(),
                     method: "get",
                     dataType: "json",
                     onload: (response) => {
@@ -1107,7 +1107,7 @@
                                 confirmButtonText: '查看历史更新内容',
                                 cancelButtonText: '关闭'
                             }).then(() => {
-                                window.open("https://js.hclonely.com/auto-task/announcement.html", "_blank");
+                                window.open("https://hclonely.github.io/auto-task/announcement.html", "_blank");
                             })
                         } else {
                             status.error("Error:" + (response.statusText || response.status));
@@ -5784,7 +5784,7 @@
         function loadAnnouncement() {
             new Promise(resolve => {
                 fuc.httpRequest({
-                    url: "https://js.hclonely.com/auto-task/announcement.json",
+                    url: "https://hclonely.github.io/auto-task/announcement.json",
                     method: "get",
                     dataType: "json",
                     onload: response => {
@@ -5905,7 +5905,7 @@
 
             let btnNum = 1;
             for (let boolean of Object.values(website.setting)) {
-                if (boolean) btnNum++;
+                if (boolean === true) btnNum++;
             }
 
             let btnArea = new Vue({
@@ -6038,13 +6038,13 @@
                 },
                 methods: {
                     setting() {
-                        window.open("https://js.hclonely.com/auto-task/setting.html", "_blank");
+                        window.open("https://hclonely.github.io/auto-task/setting.html", "_blank");
                     },
                     updateText() {
                         fuc.getAnnouncement(this);
                     },
                     updateBug() {
-                        window.open("https://ask.hclonely.com/question/create", "_blank");
+                        window.open("https://github.com/HCLonely/auto-task/issues", "_blank");
                     },
                     checkUpdate() {
                         fuc.checkUpdate(this, true);
@@ -6083,7 +6083,7 @@
         }
 
         GM_registerMenuCommand('脚本说明', () => {
-            window.open('https://blog.hclonely.com/forums/topic/255', '_blank')
+            window.open('https://hclonely.github.io/auto-task/', '_blank')
         });
         GM_registerMenuCommand('更新Steam信息', () => {
             new Promise(resolve => {
@@ -6108,4 +6108,4 @@
         console.log("%c%s", "color:white;background:red", e.stack);
     }
 
-})($jQuery);
+})();

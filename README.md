@@ -16,7 +16,7 @@
 
 # 2.脚本链接
 
-*   [点此安装（建议）](https://js.hclonely.com/auto-task/auto-task.user.js)
+*   [点此安装（建议）](https://hclonely.github.io/auto-task/auto-task.user.js)
 *   [前往GreasyFork安装](https://greasyfork.org/zh-CN/scripts/370650)
 
 # 3.功能
