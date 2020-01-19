@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.0.7
+// @version      2.0.8
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -32,7 +32,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.7
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.8
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1328,6 +1328,9 @@
                     }
                 }
                 return fmt;
+            },
+            addBackground: function() {
+                GM_addStyle(`body {background-image:url(http://wx3.sinaimg.cn/large/006brDXlly1ft9lm37ot7j31hc0u0an5.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
             }
         };
 
@@ -5839,8 +5842,10 @@
 
         if (window.location.host.includes('hclonely')) {
             if (window.location.pathname.includes('setting')) {
+                fuc.addBackground();
                 loadSetting();
             } else if (window.location.pathname.includes('announcement')) {
+                fuc.addBackground();
                 loadAnnouncement();
             }
         } else if ((window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot') || window.location.host.includes('gamecode.win')) && (!window.location.pathname.includes('giveaway'))) {
