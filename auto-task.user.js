@@ -4452,7 +4452,7 @@
                         taskBtn.removeAttr("href")[0].click();
                         let time = taskTime.match(/[\d]+/);
                         if (time) {
-                            GM_openInTab("https://time.hclonely.com/?time=" + time[0], {
+                            GM_openInTab("https://hclonely.github.io/auto-task/time.html?time=" + time[0], {
                                 active: 1,
                                 setParent: 1
                             }).onclose = () => {
