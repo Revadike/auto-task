@@ -67,7 +67,7 @@
             });
         }, 500);
         console.log("%c%s", "color:white;background:red", "Info:" + info + "\nError:" + err.stack);
-    }
+    };
     $(document).ajaxError(function(event, xhr, options, exc) {
         vueUi.$message({
             type: "error",
