@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.0.5
+// @version      2.0.6
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -32,7 +32,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.5
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.6
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -4317,7 +4317,9 @@
                                     type: 'custom',
                                     text: `<li>正在做任务:${title}...<font></font></li>`
                                 });
-                                let button = $(twitter).find("a.twitter-button:contains(Follow)").attr("href");
+                                let followButton = $(twitter).find("a.twitter-button:contains(Follow)").attr("href");
+                                let retweetButton = $(twitter).find("a.twitter-button:contains(Retweet)").attr("href");
+                                let button = followButton || retweetButton;
                                 if (button) {
                                     window.open(button, "_blank");
                                     status.warning("已打开任务页面");
