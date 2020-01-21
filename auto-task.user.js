@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.0.8
+// @version      2.1.0
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -21,6 +21,7 @@
 // @include      *://www.opiumpulses.com/giveaways
 // @include      *://gkey.fun/distribution/*
 // @include      *://givekey.ru/distribution/*
+// @include      *://takekey.ru/distribution/*
 // @include      *://chubkeys.com/giveaway/*
 // @include      *://giveawayhopper.com/giveaway/*
 // @include      *://*freegamelottery.com*
@@ -32,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.0.8
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.0
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1108,7 +1109,7 @@
                                 cancelButtonText: '关闭'
                             }).then(() => {
                                 window.open("https://hclonely.github.io/auto-task/announcement.html", "_blank");
-                            })
+                            }).catch(() => {});
                         } else {
                             status.error("Error:" + (response.statusText || response.status));
                         }
@@ -4712,6 +4713,211 @@
             conf: GM_getValue('conf') ? ((GM_getValue('conf').spoune && GM_getValue('conf').spoune.load) ? GM_getValue('conf').spoune : (GM_getValue('conf').global || defaultConf)) : defaultConf
         };
 
+        const takekey = {
+            fuck: function() {
+                this.get_tasks('do_task');
+            },
+            get_tasks: function(callback = 'do_task') {
+                let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
+                if (taskInfoHistory && taskInfoHistory !== '{"groups":[]}') this.taskInfo = taskInfoHistory;
+                if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[]}') {
+                    this.remove(true);
+                } else {
+                    this.tasks = [];
+                    this.groups = [];
+                    //this.curators=[];
+                    this.links = [];
+                    let pro = [];
+                    let status = fuc.echoLog({
+                        type: 'custom',
+                        text: `<li>正在获取任务信息...<font></font></li>`
+                    });
+
+                    let tasksContainer = $('#usl>div');
+                    for (let task of tasksContainer) { //遍历任务信息
+                        this.tasks.push(task);
+                        let icon = $(task).find('i');
+                        let link = $(task).children("a[id]").attr("href");
+                        let id = $(task).children("a[id]").attr("id");
+                        if (icon.hasClass("fa-steam")) {
+                            if (link && /gid\/[\d]+/.test(link)) {
+                                pro.push(new Promise(r => {
+                                    new Promise(resolve => {
+                                        fuc.getFinalUrl(resolve, link);
+                                    }).then(data => {
+                                        if (data.result === "success") {
+                                            let groupName = data.finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1];
+                                            if (groupName) {
+                                                this.groups.push(groupName);
+                                                this.taskInfo.groups.push(groupName);
+                                                r(1);
+                                            } else {
+                                                r(0);
+                                            }
+                                        } else {
+                                            r(0);
+                                        }
+                                    }).catch(err => {
+                                        r(0);
+                                    });
+                                }));
+                            }
+                        } else if (icon.hasClass("fa-link")) {
+                            this.links.push(id);
+                        } else {
+                            this.others.push(icon);
+                        }
+                    }
+                    Promise.all(pro).finally(() => {
+                        this.groups = fuc.unique(this.groups);
+                        //this.curators=fuc.unique(this.curators);
+                        this.links = fuc.unique(this.links);
+                        this.others = fuc.unique(this.others);
+                        this.taskInfo.groups = fuc.unique(this.taskInfo.groups);
+                        //this.taskInfo.curators=fuc.unique(this.taskInfo.curators);
+                        this.tasks = fuc.unique(this.tasks);
+                        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo);
+                        status.success();
+                        if (debug) console.log(this);
+                        if (callback === 'do_task') {
+                            if (this.tasks.length === 0) {
+                                fuc.echoLog({
+                                    type: 'custom',
+                                    text: `<li><font class="success">所有任务已完成！</font></li>`
+                                });
+                                if (this.conf.fuck.verify) this.verify();
+                            } else {
+                                this.do_task();
+                            }
+                        } else {
+                            JSON.stringify(this.taskInfo) !== '{"groups":[]}' ? this.remove(true) : fuc.echoLog({
+                                type: 'custom',
+                                text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                            });;
+                        }
+                    });
+                }
+            },
+            do_task: function() {
+                this.updateSteamInfo(() => {
+                    let pro = [];
+                    let groups = fuc.unique(this.groups);
+                    //let curators = fuc.unique(this.curators);
+                    let links = fuc.unique(this.links);
+                    if (this.conf.fuck.group) {
+                        for (let group of groups) {
+                            pro.push(new Promise((resolve) => {
+                                fuc.joinSteamGroup(resolve, group);
+                            }));
+                        }
+                    }
+                    if (this.conf.fuck.visit) {
+                        for (let link of links) {
+                            let a = $(`a[id='${link}']`).attr("onclick", "return false;");
+                            a[0].click();
+                            a.removeAttr("onclick");
+                            fuc.echoLog({
+                                type: 'custom',
+                                text: `<li><font class="warning">已执行访问页面<a href="${link}" target="_blank">${link}</a>任务！</font></li>`
+                            });
+                        }
+                    }
+                    Promise.all(pro).finally(resolve => {
+                        fuc.echoLog({
+                            type: 'custom',
+                            text: `<li><font class="success">所有任务已完成</font>，<font class="warning">访问页面任务可能有延迟！</font></li>`
+                        });
+                        if (this.conf.fuck.verify) this.verify();
+                    });
+                })
+            },
+            verify: function() {
+                setTimeout(() => {
+                    $(".fa-check").click()
+                }, 1000);
+            },
+            remove: function(remove = false) {
+                let pro = [];
+                if (remove) {
+                    this.updateSteamInfo(() => {
+                        if (this.conf.remove.group) {
+                            for (let group of fuc.unique(this.taskInfo.groups)) {
+                                pro.push(new Promise((resolve) => {
+                                    fuc.leaveSteamGroup(resolve, group);
+                                }));
+                            }
+                        }
+                        Promise.all(pro).finally(data => {
+                            fuc.echoLog({
+                                type: 'custom',
+                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                            });
+                        });
+                    });
+                } else {
+                    this.get_tasks('remove');
+                }
+            },
+            get_giveawayId: function() {
+                let id = location.href.match(/distribution\/([\d]+)/);
+                if (id) {
+                    return id[1];
+                } else {
+                    return location.href;
+                }
+            },
+            updateSteamInfo: function(callback) {
+                new Promise(resolve => {
+                    if (this.taskInfo.groups.length > 0) {
+                        if (this.taskInfo.curators.length > 0) {
+                            fuc.updateSteamInfo(resolve, "all");
+                        } else {
+                            fuc.updateSteamInfo(resolve, "community");
+                        }
+                    } else if (this.taskInfo.curators.length > 0) {
+                        fuc.updateSteamInfo(resolve, "store");
+                    } else {
+                        resolve(1);
+                    }
+                }).then(s => {
+                    if (s === 1) {
+                        callback();
+                    }
+                });
+            },
+            checkLogin: function() {
+                if ($("i.fa-sign-in").length > 0) window.open("/auth/steam", "_self");
+            },
+            checkLeft: function(ui) {
+                let leftKey = $("span:contains(Осталось ключей)").text().match(/[\d]+/);
+                if (!(leftKey && parseInt(leftKey[0]) > 0)) {
+                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true
+                    }).then(() => {
+                        window.close();
+                    });
+                }
+            },
+            groups: [], //任务需要加的组
+            curators: [], //任务需要关注的鉴赏家
+            links: [], //需要浏览的页面链接
+            taskInfo: {
+                groups: [], //所有任务需要加的组
+                curators: [], //所有任务需要关注的鉴赏家
+            },
+            tasks: [], //任务信息
+            setting: {
+                'fuck': true,
+                'verify': true,
+                'join': false,
+                'remove': true
+            },
+            conf: GM_getValue('conf') ? ((GM_getValue('conf').takekey && GM_getValue('conf').takekey.load) ? GM_getValue('conf').takekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
+        };
+
         function loadSetting() {
             const eNameToNameJoin = {
                 group: '加组',
@@ -4740,6 +4946,7 @@
                 checkLogin: '登录检测',
                 checkLeft: '剩余key检测',
                 autoOpen: '自动打开任务页面',
+                checkUpdate: '自动检测更新',
             };
             (function() {
                 const fuckOptions = [{
@@ -5506,7 +5713,42 @@
                     return conf;
                 })() : ['退组', '取关鉴赏家', '移除愿望单', '取关游戏'];
 
-                fuc.creatSetting("givekey", "gkey.fun", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
+                fuc.creatSetting("givekey", "givekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
+            })();
+            (function() {
+                const fuckOptions = [{
+                        name: '加组',
+                        eName: 'group',
+                        des: "Join XXX steam group"
+                    },
+                    {
+                        name: '访问链接',
+                        eName: 'visit',
+                        des: "Visit XXX page"
+                    }
+                ];
+                const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
+                    let conf = [];
+                    for (let eName of Object.keys(GM_getValue('conf').givekey.fuck)) {
+                        conf.push(eNameToNameJoin[eName]);
+                    }
+                    return conf;
+                })() : ['加组', '访问链接'];
+
+                const removeOptions = [{
+                    name: '退组',
+                    eName: 'group',
+                    des: "退出steam组(Group)"
+                }];
+                const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
+                    let conf = [];
+                    for (let eName of Object.keys(GM_getValue('conf').givekey.remove)) {
+                        conf.push(eNameToNameRemove[eName]);
+                    }
+                    return conf;
+                })() : ['退组'];
+
+                fuc.creatSetting("takekey", "takekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
@@ -5876,10 +6118,12 @@
             } else if (window.location.host.includes('gkey') || window.location.host.includes('givekey')) {
                 website = givekey;
                 let init = setInterval(() => {
-                    if (Centrifuge) {
-                        clearInterval(init);
-                        website.creat_app();
-                    }
+                    try {
+                        if (Centrifuge) {
+                            clearInterval(init);
+                            website.creat_app();
+                        }
+                    } catch (e) {}
                 }, 500);
             } else if (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) {
                 website = chubkeys;
@@ -5889,6 +6133,8 @@
                 website = gleam;
             } else if (window.location.host.includes('spoune')) {
                 website = spoune;
+            } else if (window.location.host.includes('takekey')) {
+                website = takekey;
             }
 
             if (globalConf.other.checkLogin) {

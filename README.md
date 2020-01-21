@@ -10,6 +10,7 @@
 *   [prys](https://prys.revadike.com/)
 *   [indiedb](https://www.indiedb.com/giveaways)
 *   [givekey](https://givekey.ru/)(需要将语言设置为”Русский”)
+*   [takekey](https://takekey.ru/)(需要将语言设置为”Русский”)
 *   [freegamelottery](https://freegamelottery.com/)
 *   [gleam.io](http://gleam.io/)
 *   [spoune](https://www.spoune.com/index.php)
@@ -57,7 +58,6 @@
 1.  前往[问答社区](https://ask.hclonely.com/question/create)提交（建议，我可以第一时间看到）
 2.  在[GitHub](https://github.com/HCLonely/auto-task/issues/new)提交
 3.  前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
-4.  发送邮件至[hclonely@hclonely.com](mailto:hclonely@hclonely.com)
 
 # 5.更新公告
 
