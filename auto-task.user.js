@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.0
+// @version      2.1.1
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.0
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.1
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -3615,10 +3615,14 @@
 
         const givekey = {
             fuck: function(btnArea) {
-                if (!$("#navbarDropdown").text().includes("Русский")) {
+                let transBtn = $(".yt-button__icon.yt-button__icon_type_right");
+                if (transBtn.css("background-position") === "-68px 0px") {
+                    transBtn[0].click();
+                }
+                if (!$("#btngo").text().includes("Получить ключ")) {
                     fuc.echoLog({
                         type: "custom",
-                        text: `<li><font class="error">需要将页面语言设置为"Русский"！</font></li>`
+                        text: `<li><font class="error">需要将页面语言设置为"Русский"(将页面右下角的自动翻译关闭)！</font></li>`
                     });
                 } else {
                     givekey.wssApp.message = btnArea.$message({
@@ -3644,8 +3648,8 @@
                     let task = $("#task_" + id);
                     let href = task.attr("href");
                     if (href.includes("vk.com")) {} else if (href.includes("steamcommunity.com/groups")) {
-                        this.groups.push(href);
-                        this.taskInfo.groups.push(href);
+                        this.groups.push(href.match(/groups\/(.+)/)[1]);
+                        this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1]);
                     } else if (task.text().includes("加入愿望单")) {
                         pro.push(new Promise(r => {
                             new Promise(resolve => {
@@ -3665,9 +3669,28 @@
                                 }
                             })
                         }));
+                    } else if (task.text().includes("关注开发商")) {
+                        pro.push(new Promise(r => {
+                            new Promise(resolve => {
+                                fuc.getFinalUrl(resolve, href);
+                            }).then(data => {
+                                if (data.result === "success") {
+                                    let appId = data.finalUrl.match(/app\/([\d]+)/);
+                                    if (appId) {
+                                        this.wGames.push(appId[1]);
+                                        this.taskInfo.wGames.push(appId[1]);
+                                        r(1);
+                                    } else {
+                                        r(0);
+                                    }
+                                } else {
+                                    r(0);
+                                }
+                            })
+                        }));
                     } else if (href.includes("store.steampowered.com/app")) {
-                        this.fGames.push(href);
-                        this.taskInfo.fGames.push(href);
+                        this.fGames.push(href.match(/app\/([\d]+)/)[1]);
+                        this.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1]);
                     } else {
                         this.links.push(href);
                     }
@@ -3872,7 +3895,7 @@
                             });
                             for (let a of $('a[id^=task_]')) {
                                 $(a).html($(a).html().replace("Посмотреть обзор на игру", "查看游戏评论")
-                                    .replace("Подписаться на разработчика", "订阅开发者")
+                                    .replace("Подписаться на разработчика", "订阅开发商")
                                     .replace("Подписаться на куратора", "订阅鉴赏家")
                                     .replace("Поставить лайк", "点赞")
                                     .replace("Подписаться на игру", "关注游戏")
@@ -3880,7 +3903,8 @@
                                     .replace("Сделать репост", "转发")
                                     .replace("Добавить в список желаемого", "加入愿望单")
                                     .replace("Сделать обзор на игру", "评论")
-                                    .replace("Посетить web-сайт", "访问页面"));
+                                    .replace("Посетить web-сайт", "访问页面")
+                                );
                             }
                         }), this.centrifuge.on("disconnect", function(e) {
                             if (debug) console.log(`WSS连接断开!\n${e.reason}`);
