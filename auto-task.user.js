@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.1
+// @version      2.1.2
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
 // @iconURL      https://hclonely.github.io/auto-task/favicon.ico
 // @homepage     https://hclonely.github.io/auto-task/
-// @supportURL   https://github.com/HCLonely/auto-task/issues
+// @supportURL   https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL    https://hclonely.github.io/auto-task/auto-task.user.js
 // @include      *://giveaway.su/giveaway/view/*
 // @include      *://marvelousga.com/*
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.1
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.2
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -6321,7 +6321,7 @@
                         fuc.getAnnouncement(this);
                     },
                     updateBug() {
-                        window.open("https://github.com/HCLonely/auto-task/issues", "_blank");
+                        window.open("https://github.com/HCLonely/auto-task/issues/new/choose", "_blank");
                     },
                     checkUpdate() {
                         fuc.checkUpdate(this, true);
