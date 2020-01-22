@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.2
+// @version      2.1.3
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.2
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.3
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -2056,9 +2056,9 @@
                                 }));
                             } else {
                                 if (/(Subscribe.*channel)|(Retweet)|(Twitter)/gim.test(taskDes.text())) {
-                                    if (!this.verifyBtn) this.verifyBtn = taskDes.find("button:first");
+                                    if (!this.verifyBtn) this.verifyBtn = taskDes.parent().find("button:contains(Verify)");
                                     if (callback === 'do_task' && globalConf.other.autoOpen) {
-                                        taskDes.find("button")[0].click();
+                                        taskDes.parent().find("button")[0].click();
                                     }
                                 }
                                 pro.push(new Promise(res => {
@@ -2081,9 +2081,7 @@
                         this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames);
                         this.taskIds = fuc.unique(this.taskIds);
                         this.tasks = fuc.unique(this.tasks);
-                        let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                        let taskInfo = taskInfoHistory ? [...taskInfoHistory, ...this.taskInfo] : this.taskInfo;
-                        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', fuc.unique(taskInfo));
+                        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo);
                         status.success();
                         if (debug) console.log(this);
                         if (callback === 'do_task') {
@@ -2185,7 +2183,7 @@
                             type: 'custom',
                             text: `<li><font class="success">所有任务验证完成！</font></li>`
                         });
-                        if (this.verifyBtn) {
+                        if (this.verifyBtn.length > 0) {
                             this.verifyBtn.removeAttr("disabled")[0].click();
                         } else {
                             location.reload(true);
