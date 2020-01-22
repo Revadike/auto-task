@@ -1,11 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-<<<<<<< HEAD
 // @version      2.1.2
-=======
-// @version      2.1.1
->>>>>>> 496567d0a339575f80a15accbe7d7dcc2874c500
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -37,11 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-<<<<<<< HEAD
 // @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.2
-=======
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.1
->>>>>>> 496567d0a339575f80a15accbe7d7dcc2874c500
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
