@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.3
+// @version      2.1.4
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.3
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.4
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1449,8 +1449,19 @@
                             this.taskInfo.toFinalUrl[r.url] = r.finalUrl;
                         }
                     }
+
+                    this.links = fuc.unique(this.links);
+                    this.taskInfo.groups = fuc.unique(this.taskInfo.groups);
+                    this.taskInfo.curators = fuc.unique(this.taskInfo.curators);
+                    this.taskInfo.publishers = fuc.unique(this.taskInfo.publishers);
+                    this.taskInfo.developers = fuc.unique(this.taskInfo.developers);
+                    this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames);
+                    this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames);
+                    this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements);
+                    this.taskInfo.links = fuc.unique(this.taskInfo.links);
+                    this.taskInfo.toFinalUrl = fuc.unique(this.taskInfo.toFinalUrl);
                     //任务链接处理完成
-                    GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', fuc.unique(this.taskInfo));
+                    GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo);
                     status.success();
                     if (debug) console.log(this);
                     e === "doTask" ? this.do_task('join') : this.do_task('remove');
