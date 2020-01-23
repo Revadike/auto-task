@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.4
+// @version      2.1.5
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.4
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.5
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1838,7 +1838,7 @@
                                             });
                                         } else {
                                             status.error('Error:' + (response.response.message || 'error'));
-                                            if (globalConf.other.autoOpen) window.open($(task.taskDes).find("a").attr("href"), "_blank");
+                                            if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find("a").attr("href"), "_blank");
                                             resolve({
                                                 result: 'error',
                                                 statusText: response.statusText,
@@ -1847,7 +1847,7 @@
                                         }
                                     } else {
                                         status.error('Error:' + (response.response.message || response.statusText || response.status));
-                                        if (globalConf.other.autoOpen) window.open($(task.taskDes).find("a").attr("href"), "_blank");
+                                        if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find("a").attr("href"), "_blank");
                                         resolve({
                                             result: 'error',
                                             statusText: response.statusText,
@@ -1863,10 +1863,11 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a id="google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
+                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a class="hclonely-google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
                         });
                         $("#get_key_container").show();
-                        $("#google").click(() => {
+                        $(".hclonely-google").unbind();
+                        $(".hclonely-google").click(() => {
                             $("#get_key_container")[0].scrollIntoView()
                         });
                     });
@@ -2612,9 +2613,10 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a id="google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
+                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a class="hclonely-google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
                         });
-                        $("#google").click(() => {
+                        $(".hclonely-google").unbind();
+                        $(".hclonely-google").click(() => {
                             $("#captcha")[0].scrollIntoView()
                         });
                     });
