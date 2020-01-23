@@ -6351,9 +6351,6 @@
                     }
                 }
             });
-            if (globalConf.other.checkUpdate) {
-                fuc.checkUpdate(extraBtn);
-            }
 
             $('.fuck-task-logs .el-notification__content').show();
             if (!showLogs) {
