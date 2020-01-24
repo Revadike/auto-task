@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.6
+// @version      2.1.7
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.6
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.7
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -130,7 +130,8 @@
                 showDetails: 0,
                 checkLogin: 1,
                 checkLeft: 1,
-                autoOpen: 0
+                autoOpen: 0,
+                reCaptcha: 0
             },
             announcement: ""
         };
@@ -4981,6 +4982,7 @@
                 checkLeft: '剩余key检测',
                 autoOpen: '自动打开任务页面',
                 checkUpdate: '自动检测更新',
+                reCaptcha: '人机验证修复'
             };
             (function() {
                 const fuckOptions = [{
@@ -5164,6 +5166,11 @@
                         name: '自动检测更新',
                         eName: 'checkUpdate',
                         des: "自动检测更新"
+                    },
+                    {
+                        name: '人机验证修复',
+                        eName: 'reCaptcha',
+                        des: "如果Gamehag网站人机验证出错，请尝试打开/关闭此选项"
                     },
                 ];
                 const checkedOthers = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
@@ -6140,7 +6147,7 @@
                 website = gamecode;
             } else if (window.location.host.includes('gamehag')) {
                 $("#getkey").removeAttr("disabled");
-                $("body").append(`<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>`);
+                if (globalConf.other.reCaptcha) $("body").append(`<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>`);
 
                 website = gamehag;
             } else if (window.location.host.includes('prys.revadike')) {
