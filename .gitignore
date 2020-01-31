@@ -24,3 +24,6 @@ takekey.js
 /.idea/
 /node_modules/
 main-pre.js
+gamehunt.js
+.jshintignore
+.jshintrc

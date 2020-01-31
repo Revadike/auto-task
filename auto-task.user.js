@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.7
+// @version      2.1.8
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.7
+// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.8
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1477,6 +1477,7 @@
                     }
                 }
                 if ($("div.bind-discord").is(":visible")) $("div.bind-discord a")[0].click();
+                if ($("div.bind-twitch").is(":visible")) $("div.bind-twitch a")[0].click();
                 new Promise(resolve => {
                     if (this.taskInfo.groups.length > 0 || this.taskInfo.announcements.length > 0) {
                         if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
@@ -1753,7 +1754,7 @@
                         JSON.stringify(this.taskInfo) !== '{"groups":[],"curators":[]}' ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
                             text: `<li><font class="warning">没有可以移除的任务！</font></li>`
-                        });;
+                        });
                     }
                 }
             },
@@ -1802,7 +1803,7 @@
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
-                })
+                });
             },
             verify: function(verify = false) {
                 if (verify) {
@@ -1868,7 +1869,7 @@
                         $("#get_key_container").show();
                         $(".hclonely-google").unbind();
                         $(".hclonely-google").click(() => {
-                            $("#get_key_container")[0].scrollIntoView()
+                            $("#get_key_container")[0].scrollIntoView();
                         });
                     });
                 } else {
@@ -2107,7 +2108,7 @@
                             JSON.stringify(this.taskInfo) !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}' ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
                                 text: `<li><font class="warning">没有可以移除的任务！</font></li>`
-                            });;
+                            });
                         }
                     });
                 }
@@ -3027,7 +3028,7 @@
                             if (id) this.tasks.push({
                                 id: id[0],
                                 taskDes: $(check).parent().prev().html().trim()
-                            })
+                            });
                         }
                         this.verify(true);
                     } else {
@@ -3375,12 +3376,12 @@
                                         },
                                         success: function(response) {
                                             if (debug) console.log(response);
-                                            if (response["success"]) {
-                                                status.success("Success:" + response["text"]);
+                                            if (response.success) {
+                                                status.success("Success:" + response.text);
                                                 promo.addClass("buttonentered").closest("p").html(promo.closest("p").find("span").html());
                                                 resolve(1);
                                             } else {
-                                                status.error("Error:" + response["text"]);
+                                                status.error("Error:" + response.text);
                                                 resolve(0);
                                             }
                                         }
@@ -3408,12 +3409,12 @@
                                         },
                                         success: function(response) {
                                             if (debug) console.log(response);
-                                            if (response["success"]) {
-                                                status.success("Success:" + response["text"]);
+                                            if (response.success) {
+                                                status.success("Success:" + response.text);
                                                 promo.toggleClass("buttonentered").closest("p").html(promo.closest("p").find("span").html());
                                                 resolve(1);
                                             } else {
-                                                status.error("Error:" + response["text"]);
+                                                status.error("Error:" + response.text);
                                                 resolve(0);
                                             }
                                         }
@@ -3440,12 +3441,12 @@
                                         },
                                         success: function(response) {
                                             if (debug) console.log(response);
-                                            if (response["success"]) {
-                                                status.success("Success:" + response["text"]);
+                                            if (response.success) {
+                                                status.success("Success:" + response.text);
                                                 promo.toggleClass("buttonentered").closest("p").html(promo.closest("p").find("span").html());
                                                 resolve(1);
                                             } else {
-                                                status.error("Error:" + response["text"]);
+                                                status.error("Error:" + response.text);
                                                 resolve(0);
                                             }
                                         }
@@ -3472,12 +3473,12 @@
                                         },
                                         success: function(response) {
                                             if (debug) console.log(response);
-                                            if (response["success"]) {
-                                                status.success("Success:" + response["text"]);
+                                            if (response.success) {
+                                                status.success("Success:" + response.text);
                                                 promo.toggleClass("buttonentered").closest("p").html(promo.closest("p").find("span").html());
                                                 resolve(1);
                                             } else {
-                                                status.error("Error:" + response["text"]);
+                                                status.error("Error:" + response.text);
                                                 resolve(0);
                                             }
                                         }
@@ -3678,7 +3679,7 @@
                                 } else {
                                     r(0);
                                 }
-                            })
+                            });
                         }));
                     } else if (task.text().includes("关注开发商")) {
                         pro.push(new Promise(r => {
@@ -3697,7 +3698,7 @@
                                 } else {
                                     r(0);
                                 }
-                            })
+                            });
                         }));
                     } else if (href.includes("store.steampowered.com/app")) {
                         this.fGames.push(href.match(/app\/([\d]+)/)[1]);
@@ -3761,7 +3762,7 @@
                                     } else {
                                         r(0);
                                     }
-                                })
+                                });
                             }));
                         } else if (href.includes("store.steampowered.com/app/")) {
                             this.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1]);
@@ -3834,7 +3835,7 @@
                             text: `<li><font class="success">所有任务已完成！</font></li>`
                         });
                     });
-                })
+                });
             },
             verify: function() {
                 givekey.wssApp.status = fuc.echoLog({
@@ -3843,7 +3844,7 @@
                 });
                 givekey.wssApp.request('/distribution/check', 'post', {
                     id: location.href.match(/[\d]+/)[0]
-                })
+                });
             },
             remove: function(remove = false) {
                 let pro = [];
@@ -3946,7 +3947,7 @@
                             if (data || (data = {}), type || (type = "post"), "get" == type.toLowerCase()) {
                                 if (givekey.wssApp.loading)
                                     return;
-                                givekey.wssApp.loading = !0
+                                givekey.wssApp.loading = !0;
                             }
                             $.ajax({
                                 url: url,
@@ -3981,12 +3982,12 @@
                                             givekey.wssApp.status.error("Error:" + e.status);
                                             break;
                                     }
-                                    givekey.wssApp.loading = !1
+                                    givekey.wssApp.loading = !1;
                                 }
-                            })
+                            });
                         }
                     }
-                }
+                };
             },
             get_giveawayId: function() {
                 let id = location.href.match(/distribution\/([\d]+)/);
@@ -4326,7 +4327,7 @@
                         JSON.stringify(this.taskInfo) !== '{"groups":[]}' ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
                             text: `<li><font class="warning">没有可以移除的任务！</font></li>`
-                        });;
+                        });
                     }
                 }
             },
@@ -4412,7 +4413,7 @@
                         });
                         if (this.conf.fuck.verify) this.verify(0);
                     });
-                })
+                });
             },
             verify: function(i = 0) {
                 if ($(".ng-scope[ng-include*=challenge]").is(":visible")) {
@@ -4437,12 +4438,12 @@
                                 enterBtn[0].click();
                                 status.warning("Complete");
                                 setTimeout(() => {
-                                    gleam.verify(++i)
+                                    gleam.verify(++i);
                                 }, 1000);
                             }, 1000);
                         } else {
                             setTimeout(() => {
-                                gleam.verify(++i)
+                                gleam.verify(++i);
                             }, 1000);
                         }
                     } else {
@@ -4584,7 +4585,7 @@
                             this.tasks.push({
                                 id: taskId[1],
                                 text: $(task).text()
-                            })
+                            });
                         } else {
                             fuc.echoLog({
                                 type: 'custom',
@@ -4696,7 +4697,7 @@
                                             },
                                             r: resolve,
                                             status
-                                        })
+                                        });
                                     } else {
                                         status.error("Error:获取任务链接失败(1)");
                                         resolve(0);
@@ -4828,7 +4829,7 @@
                             JSON.stringify(this.taskInfo) !== '{"groups":[]}' ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
                                 text: `<li><font class="warning">没有可以移除的任务！</font></li>`
-                            });;
+                            });
                         }
                     });
                 }
@@ -4864,11 +4865,11 @@
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
-                })
+                });
             },
             verify: function() {
                 setTimeout(() => {
-                    $(".fa-check").click()
+                    $(".fa-check").click();
                 }, 1000);
             },
             remove: function(remove = false) {
@@ -6059,7 +6060,7 @@
                                         vueUi.$message({
                                             type: 'info',
                                             message: '已取消'
-                                        })
+                                        });
                                     });
                             }
                             this.$refs.upload.abort(file.name);
@@ -6076,6 +6077,7 @@
                     method: "get",
                     dataType: "json",
                     onload: response => {
+                        if (debug) console.log(response);
                         if (response.status === 200 && response.response) {
                             resolve({
                                 result: "success",
@@ -6242,7 +6244,7 @@
                             title: website.setting.removeTitle || '一键退组、取关鉴赏家、取关游戏、移除愿望单...',
                             show: website.setting.remove,
                             click: () => {
-                                website.remove()
+                                website.remove();
                             }
                         }
                     ],
@@ -6377,7 +6379,7 @@
         }
 
         GM_registerMenuCommand('脚本说明', () => {
-            window.open('https://hclonely.github.io/auto-task/', '_blank')
+            window.open('https://hclonely.github.io/auto-task/', '_blank');
         });
         GM_registerMenuCommand('更新Steam信息', () => {
             new Promise(resolve => {
