@@ -18,6 +18,7 @@ marvelousga.js
 opiumpulses.js
 pack.js
 prys.js
+test.js
 set.html
 spoune.js
 takekey.js
@@ -27,3 +28,4 @@ main-pre.js
 gamehunt.js
 .jshintignore
 .jshintrc
+package.json

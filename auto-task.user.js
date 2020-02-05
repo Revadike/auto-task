@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.8
+// @version      2.1.9
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
-// @iconURL      https://hclonely.github.io/auto-task/favicon.ico
-// @homepage     https://hclonely.github.io/auto-task/
+// @iconURL      https://github.com/HCLonely/auto-task/raw/master/favicon.ico
+// @homepage     https://blog.hclonely.com/auto-task/
 // @supportURL   https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL    https://hclonely.github.io/auto-task/auto-task.user.js
+// @updateURL    https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
 // @include      *://giveaway.su/giveaway/view/*
 // @include      *://marvelousga.com/*
 // @include      *://dupedornot.com/*
@@ -28,12 +28,12 @@
 // @include      *://gleam.io/*
 // @include      *://www.spoune.com/index.php*
 // @exclude      *googleads*
-// @include      https://hclonely.github.io/auto-task/setting.html
-// @include      https://hclonely.github.io/auto-task/announcement.html
+// @include      https://blog.hclonely.com/auto-task/setting.html
+// @include      https://blog.hclonely.com/auto-task/announcement.html
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://hclonely.github.io/auto-task/auto-task.min.css?ver=2.1.8
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.9
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -421,7 +421,7 @@
                                 status: response.status
                             });
                         } else {
-                            status.error(`Error:${response.response.msg||response.statusText}(${response.response.success||response.status})`);
+                            status.error(`Error:${response.response.msg || response.statusText}(${response.response.success || response.status})`);
                             r({
                                 result: 'error',
                                 statusText: response.statusText,
@@ -448,7 +448,7 @@
                 } else {
                     let pro = new Promise(resolve => {
                         this.httpRequest({
-                            url: `https://store.steampowered.com/${isPublisher?"publisher":"developer"}/${developerName}`,
+                            url: `https://store.steampowered.com/${isPublisher ? "publisher" : "developer"}/${developerName}`,
                             method: "GET",
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -937,7 +937,7 @@
                                 status: response.status
                             });
                         } else {
-                            status.error(`Error:${response.response.msg||response.statusText}(${response.response.success||response.status})`);
+                            status.error(`Error:${response.response.msg || response.statusText}(${response.response.success || response.status})`);
                             r({
                                 result: 'error',
                                 statusText: response.statusText,
@@ -1027,7 +1027,7 @@
                     text: `<li>正在检测更新...<font></font></li>`
                 });
                 this.httpRequest({
-                    url: "https://hclonely.github.io/auto-task/version?t=" + new Date().getTime(),
+                    url: "https://github.com/HCLonely/auto-task/raw/master/version?t=" + new Date().getTime(),
                     method: "get",
                     dataType: "json",
                     onload: (response) => {
@@ -1041,7 +1041,7 @@
                             v.icon = "el-icon-download";
                             v.title = "立即更新至" + response.response.version;
                             v.checkUpdate = function() {
-                                window.open("https://hclonely.github.io/auto-task/auto-task.user.js", "_blank")
+                                window.open("https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js", "_blank")
                             };
                             if (s) status.success("检测到新版本:" + response.response.version);
                             v.hidden = false;
@@ -1085,7 +1085,7 @@
                     text: `<li>正在获取更新公告...<font></font></li>`
                 });
                 this.httpRequest({
-                    url: "https://hclonely.github.io/auto-task/new.json?t=" + new Date().getTime(),
+                    url: "https://github.com/HCLonely/auto-task/raw/master/new.json?t=" + new Date().getTime(),
                     method: "get",
                     dataType: "json",
                     onload: (response) => {
@@ -1100,16 +1100,16 @@
                             const h = vueUi.$createElement;
                             let hArr = [];
                             for (let index in data.text) {
-                                if (/^[\d]+$/.test(index)) hArr.push(h('p', null, `${parseInt(index)+1}.${data.text[index]}`));
+                                if (/^[\d]+$/.test(index)) hArr.push(h('p', null, `${parseInt(index) + 1}.${data.text[index]}`));
                             }
                             vueUi.$msgbox({
-                                title: `V${data.version}(${fuc.dateFormat("YYYY-mm-dd HH:MM",new Date(data.time))})`,
+                                title: `V${data.version}(${fuc.dateFormat("YYYY-mm-dd HH:MM", new Date(data.time))})`,
                                 message: h('div', null, hArr),
                                 showCancelButton: true,
                                 confirmButtonText: '查看历史更新内容',
                                 cancelButtonText: '关闭'
                             }).then(() => {
-                                window.open("https://hclonely.github.io/auto-task/announcement.html", "_blank");
+                                window.open("https://blog.hclonely.com/auto-task/announcement.html", "_blank");
                             }).catch(() => {});
                         } else {
                             status.error("Error:" + (response.statusText || response.status));
@@ -1333,6 +1333,24 @@
             },
             addBackground: function() {
                 GM_addStyle(`body {background-image:url(http://wx3.sinaimg.cn/large/006brDXlly1ft9lm37ot7j31hc0u0an5.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
+            },
+            isEmptyObjArr: function(object) {
+                for (let value of Object.values(object)) {
+                    if (Object.prototype.toString.call(value) === "[object Array]") {
+                        if (value.length !== 0) {
+                            return false;
+                        }
+                    } else if (Object.prototype.toString.call(value) === "[object Object]") {
+                        if (Object.keys(value).length !== 0) {
+                            return false;
+                        }
+                    } else if (Object.prototype.toString.call(value) === "[object String]") {
+                        if (value !== "") {
+                            return false;
+                        }
+                    }
+                }
+                return true;
             }
         };
 
@@ -1340,10 +1358,11 @@
             get_tasks: function(e) {
                 //获取任务信息
                 let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfo && taskInfo !== '{"groups":[],"curators":[],"publishers":[],"developers":[],"fGames":[],"wGames":[],"announcements":[],"links":[],"toFinalUrl":{}}') {
+                if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === "remove") {
                     this.taskInfo = taskInfo;
-                    e === "doTask" ? this.do_task('join') : this.do_task('remove');
+                    this.do_task('remove');
                 } else {
+                    if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo;
                     let status = fuc.echoLog({
                         type: 'custom',
                         text: `<li>正在获取任务信息...<font></font></li>`
@@ -1676,8 +1695,8 @@
             },
             get_tasks: function(callback = 'do_task') {
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[]}') this.taskInfo = taskInfoHistory;
-                if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[]}') {
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
+                if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
                     this.remove(true);
                 } else {
                     this.tasks = [];
@@ -1751,7 +1770,7 @@
                             text: `<li><font class="success">所有任务验证完成！</font></li>`
                         });
                     } else {
-                        JSON.stringify(this.taskInfo) !== '{"groups":[],"curators":[]}' ? this.remove(true) : fuc.echoLog({
+                        !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
                             text: `<li><font class="warning">没有可以移除的任务！</font></li>`
                         });
@@ -1982,7 +2001,7 @@
             },
             get_tasks: function(callback = 'do_task') {
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') this.taskInfo = taskInfoHistory;
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
                 if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') {
                     this.remove(true);
                 } else {
@@ -2105,7 +2124,7 @@
                                 text: `<li><font class="success">所有任务已完成！</font></li>`
                             });
                         } else {
-                            JSON.stringify(this.taskInfo) !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}' ? this.remove(true) : fuc.echoLog({
+                            !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
                                 text: `<li><font class="warning">没有可以移除的任务！</font></li>`
                             });
@@ -2327,7 +2346,7 @@
                 let allVerifyBtns = $("[id^=listOfTasks_btnVerify]");
                 if (callback === 'do_task') {
                     let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                    if (taskInfo && taskInfo !== '{"groups":[]}') this.taskInfo = taskInfo;
+                    if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo;
                     this.groups = [];
                     for (let btn of verifyBtns) {
                         if ($(btn).attr('id').split('_')[4] === "joinGroup") {
@@ -2502,7 +2521,7 @@
                     }
                 } else if (callback === "remove") {
                     let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                    if (taskInfo && taskInfo !== '{"groups":[]}') {
+                    if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
                         this.taskInfo = taskInfo;
                         this.remove(true);
                     } else {
@@ -2706,7 +2725,7 @@
                 let verifyBtns = $("button[data-id]");
                 if (callback === 'do_task') {
                     let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                    if (taskInfo && taskInfo !== '{"groups":[]}') this.taskInfo = taskInfo;
+                    if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo;
                     this.groups = [];
                     this.tasks = [];
                     for (let btn of verifyBtns) {
@@ -2947,7 +2966,7 @@
                 }
                 if (callback === 'do_task') {
                     let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                    if (taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[]}') this.taskInfo = taskInfoHistory;
+                    if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
                     this.groups = [];
                     this.curators = [];
                     let pro = [];
@@ -3040,7 +3059,7 @@
                     }
                 } else if (callback === "remove") {
                     let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                    if (taskInfo && taskInfo !== '{"groups":[],"curators":[]}') {
+                    if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
                         this.taskInfo = taskInfo;
                         this.remove(true);
                     } else {
@@ -3655,7 +3674,7 @@
                 this.fGames = [];
                 this.links = [];
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"fGames":[],"wGames":[]}') this.taskInfo = taskInfoHistory;
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
                 for (let id of tasks) {
                     let task = $("#task_" + id);
                     let href = task.attr("href");
@@ -3730,7 +3749,7 @@
             },
             get_tasks: function() {
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"fGames":[],"wGames":[]}') {
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
                     this.taskInfo = taskInfoHistory;
                     this.remove(true);
                 } else {
@@ -4237,8 +4256,8 @@
             },
             get_tasks: function(callback = 'do_task') {
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[]}') this.taskInfo = taskInfoHistory;
-                if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[]}') {
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
+                if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
                     this.remove(true);
                 } else {
                     this.twitters = [];
@@ -4324,7 +4343,7 @@
                     } else if (callback === 'verify') {
                         this.verify(true);
                     } else {
-                        JSON.stringify(this.taskInfo) !== '{"groups":[]}' ? this.remove(true) : fuc.echoLog({
+                        !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
                             text: `<li><font class="warning">没有可以移除的任务！</font></li>`
                         });
@@ -4492,7 +4511,7 @@
                         taskBtn.removeAttr("href")[0].click();
                         let time = taskTime.match(/[\d]+/);
                         if (time) {
-                            GM_openInTab("https://hclonely.github.io/auto-task/time.html?time=" + time[0], {
+                            GM_openInTab("https://blog.hclonely.com/auto-task/time.html?time=" + time[0], {
                                 active: 1,
                                 setParent: 1
                             }).onclose = () => {
@@ -4755,8 +4774,8 @@
             },
             get_tasks: function(callback = 'do_task') {
                 let taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
-                if (taskInfoHistory && taskInfoHistory !== '{"groups":[]}') this.taskInfo = taskInfoHistory;
-                if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[]}') {
+                if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory;
+                if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
                     this.remove(true);
                 } else {
                     this.tasks = [];
@@ -4826,7 +4845,7 @@
                                 this.do_task();
                             }
                         } else {
-                            JSON.stringify(this.taskInfo) !== '{"groups":[]}' ? this.remove(true) : fuc.echoLog({
+                            !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
                                 text: `<li><font class="warning">没有可以移除的任务！</font></li>`
                             });
@@ -6073,7 +6092,7 @@
         function loadAnnouncement() {
             new Promise(resolve => {
                 fuc.httpRequest({
-                    url: "https://hclonely.github.io/auto-task/announcement.json",
+                    url: "https://github.com/HCLonely/auto-task/raw/master/announcement.json",
                     method: "get",
                     dataType: "json",
                     onload: response => {
