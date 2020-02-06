@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.9
+// @version      2.1.10
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.9
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.10
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1386,7 +1386,7 @@
                 let taskInfo = [];
                 let taskName = taskDes.text().trim();
                 let link = taskDes.attr('href');
-                if (/disable adblock|on facebook/gim.test(taskName)) {
+                if (/disable adblock/gim.test(taskName)) {
                     return [{
                         name: 'nonSteam'
                     }];
@@ -1421,7 +1421,7 @@
                     });
                     this.store = 1;
                 } else {
-                    if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Join.*Discord.*server)/gim.test(taskName)) {
+                    if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Join.*Discord.*server)|(Follow.*on.*Facebook)/gim.test(taskName)) {
                         this.links.push(link);
                     } else {
                         if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
