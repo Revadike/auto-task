@@ -53,9 +53,8 @@
 
 # 4.反馈方式
 
-1. 前往[问答社区](https://ask.hclonely.com/question/create)提交（建议，我可以第一时间看到）
-2. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new)提交
-3. 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
+1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new)提交
+2. 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
 
 # 5.更新公告
 
