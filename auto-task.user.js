@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.10
+// @version      2.1.11
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.10
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.11
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -3862,7 +3862,8 @@
                     text: `<li>正在获取任务完成状态(时间稍长，请耐心等待)...<font></font></li>`
                 });
                 givekey.wssApp.request('/distribution/check', 'post', {
-                    id: location.href.match(/[\d]+/)[0]
+                    id: location.href.match(/[\d]+/)[0],
+                    g_captcha: GOOGLE_CAPTCHA_ID
                 });
             },
             remove: function(remove = false) {
