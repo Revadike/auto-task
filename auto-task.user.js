@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.11
+// @version      2.1.12
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.11
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.12
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -1192,11 +1192,16 @@
                     let conf = {};
                     for (let form of $(div).find('form')) {
                         let name = $(form).attr('name');
-                        let setting = {};
-                        for (let data of $(form).serializeArray()) {
-                            setting[data.name] = 1;
+                        if (name === 'max-point') {
+                            let value = $(form).find('input').val();
+                            conf[name] = /^[\d]+$/.test(value) ? value : 0;
+                        } else {
+                            let setting = {};
+                            for (let data of $(form).serializeArray()) {
+                                setting[data.name] = 1;
+                            }
+                            conf[name] = setting;
                         }
-                        conf[name] = setting;
                     }
                     confs[id] = conf;
                 }
@@ -3543,6 +3548,7 @@
             get_tasks: function(type = 'FREE') {
                 let items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`);
                 let myPoint = this.myPoints;
+                let maxPoint = this.maxPoint();
                 let option = {
                     arr: items,
                     time: 100,
@@ -3571,43 +3577,49 @@
                                     text: `<li><font class="warning">获取抽奖需要点数失败，任务中止！</font></li>`
                                 });
                             } else {
-                                let status = fuc.echoLog({
-                                    type: 'custom',
-                                    text: `<li>正在参加抽奖<a href="${$(item).find("a.giveaways-page-item-img-btn-more").attr("href")}" target="_blank">${$(item).find(".giveaways-page-item-footer-name").text().trim()}</a>...<font></font></li>`
-                                });
-                                let a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')");
-                                if (a.attr("onclick") && a.attr("onclick").includes('checkUser')) {
-                                    let giveawayId = a.attr("onclick").match(/[\d]+/);
-                                    if (giveawayId) {
-                                        checkUser(giveawayId[0]);
-                                    }
-                                }
-                                new Promise(r => {
-                                    fuc.httpRequest({
-                                        url: a.attr('href'),
-                                        method: 'GET',
-                                        onload: response => {
-                                            if (debug) console.log(response);
-                                            if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
-                                                status.success();
-                                                let points = response.responseText.match(/Points:[\s]*?([\d]+)/);
-                                                if (type === "points" && points) {
-                                                    if (debug) console.log('剩余点数: ' + points[1]);
-                                                    opiumpulses.myPoints = parseInt(points[1]);
-                                                }
-                                            } else {
-                                                status.error('Success:' + (response.status || response.statusText));
-                                            }
-                                            r(1);
-                                        },
-                                        status,
-                                        r
-                                    });
-                                }).then(data => {
+                                if (parseInt(needPoints[0]) > maxPoint) {
                                     i++;
                                     option.i = i;
                                     fuc.forOrder(option);
-                                });
+                                } else {
+                                    let status = fuc.echoLog({
+                                        type: 'custom',
+                                        text: `<li>正在参加抽奖<a href="${$(item).find("a.giveaways-page-item-img-btn-more").attr("href")}" target="_blank">${$(item).find(".giveaways-page-item-footer-name").text().trim()}</a>...<font></font></li>`
+                                    });
+                                    let a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')");
+                                    if (a.attr("onclick") && a.attr("onclick").includes('checkUser')) {
+                                        let giveawayId = a.attr("onclick").match(/[\d]+/);
+                                        if (giveawayId) {
+                                            checkUser(giveawayId[0]);
+                                        }
+                                    }
+                                    new Promise(r => {
+                                        fuc.httpRequest({
+                                            url: a.attr('href'),
+                                            method: 'GET',
+                                            onload: response => {
+                                                if (debug) console.log(response);
+                                                if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
+                                                    status.success();
+                                                    let points = response.responseText.match(/Points:[\s]*?([\d]+)/);
+                                                    if (type === "points" && points) {
+                                                        if (debug) console.log('剩余点数: ' + points[1]);
+                                                        opiumpulses.myPoints = parseInt(points[1]);
+                                                    }
+                                                } else {
+                                                    status.error('Success:' + (response.status || response.statusText));
+                                                }
+                                                r(1);
+                                            },
+                                            status,
+                                            r
+                                        });
+                                    }).then(data => {
+                                        i++;
+                                        option.i = i;
+                                        fuc.forOrder(option);
+                                    });
+                                }
                             }
                         }
                     },
@@ -3641,7 +3653,10 @@
                 'join': false,
                 'remove': false
             },
-            conf: GM_getValue('conf') ? ((GM_getValue('conf').opiumpulses && GM_getValue('conf').opiumpulses.load) ? GM_getValue('conf').opiumpulses : (GM_getValue('conf').global || defaultConf)) : defaultConf
+            conf: GM_getValue('conf') ? ((GM_getValue('conf').opiumpulses && GM_getValue('conf').opiumpulses.load) ? GM_getValue('conf').opiumpulses : (GM_getValue('conf').global || defaultConf)) : defaultConf,
+            maxPoint: function() {
+                return this.conf["max-point"] || Infinity;
+            }
         };
 
         const givekey = {
@@ -6085,6 +6100,22 @@
                             }
                             this.$refs.upload.abort(file.name);
                         }
+                    }
+                });
+            })();
+            (function() {
+                const maxPoint = GM_getValue('conf') ? GM_getValue('conf').opiumpulses ? (GM_getValue('conf').opiumpulses['max-point'] || 0) : 0 : 0;
+
+                new Vue({
+                    el: '#opiumpulses',
+                    data: {
+                        header: 'opiumpulses网站设置',
+                        checked: GM_getValue('conf') ? GM_getValue('conf').opiumpulses ? GM_getValue('conf').opiumpulses.load ? true : false : false : false,
+                        maxPoint: maxPoint,
+                        openDelay: 100,
+                        rowType: "flex",
+                        rowAlign: "middle",
+                        verify: "1"
                     }
                 });
             })();
