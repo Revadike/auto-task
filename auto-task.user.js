@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.12
+// @version      2.1.13
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.12
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.13
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -4835,6 +4835,8 @@
                             }
                         } else if (icon.hasClass("fa-link")) {
                             this.links.push(id);
+                        } else if (icon.hasClass("fa-vk")) {
+                            this.vks.push(link);
                         } else {
                             this.others.push(icon);
                         }
@@ -4875,6 +4877,8 @@
                     let groups = fuc.unique(this.groups);
                     //let curators = fuc.unique(this.curators);
                     let links = fuc.unique(this.links);
+                    let others = fuc.unique(this.others);
+                    let vks = fuc.unique(this.vks);
                     if (this.conf.fuck.group) {
                         for (let group of groups) {
                             pro.push(new Promise((resolve) => {
@@ -4887,16 +4891,26 @@
                             let a = $(`a[id='${link}']`).attr("onclick", "return false;");
                             a[0].click();
                             a.removeAttr("onclick");
-                            fuc.echoLog({
-                                type: 'custom',
-                                text: `<li><font class="warning">已执行访问页面<a href="${link}" target="_blank">${link}</a>任务！</font></li>`
-                            });
+                            pro.push(new Promise((resolve) => {
+                                fuc.visitLink(resolve, $(`a[id='${link}']`).attr('href'));
+                            }));
                         }
+                    }
+                    if (globalConf.other.autoOpen) {
+                        for (let vk of vks) {
+                            window.open(vk, '_blank');
+                        }
+                    }
+                    for (let other of others) {
+                        fuc.echoLog({
+                            type: 'custom',
+                            text: `<li><font class="warning">未知任务类型:${$(other).attr('class')}</font></li>`
+                        });
                     }
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成</font>，<font class="warning">访问页面任务可能有延迟！</font></li>`
+                            text: `<li><font class="success">所有任务已完成</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -4975,6 +4989,8 @@
             groups: [], //任务需要加的组
             curators: [], //任务需要关注的鉴赏家
             links: [], //需要浏览的页面链接
+            others: [],
+            vks: [],
             taskInfo: {
                 groups: [], //所有任务需要加的组
                 curators: [], //所有任务需要关注的鉴赏家
