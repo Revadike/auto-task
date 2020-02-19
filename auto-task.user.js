@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.13
+// @version      2.1.15
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
 // @iconURL      https://github.com/HCLonely/auto-task/raw/master/favicon.ico
-// @homepage     https://blog.hclonely.com/auto-task/
+// @homepage     https://blog.hclonely.com/posts/777c60d5/
 // @supportURL   https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL    https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
 // @include      *://giveaway.su/giveaway/view/*
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.13
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.15
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -3577,7 +3577,7 @@
                                     text: `<li><font class="warning">获取抽奖需要点数失败，任务中止！</font></li>`
                                 });
                             } else {
-                                if (parseInt(needPoints[0]) > maxPoint) {
+                                if (type === "points" && parseInt(needPoints[0]) > maxPoint) {
                                     i++;
                                     option.i = i;
                                     fuc.forOrder(option);
@@ -6401,7 +6401,7 @@
                 },
                 methods: {
                     setting() {
-                        window.open("https://hclonely.github.io/auto-task/setting.html", "_blank");
+                        window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
                     },
                     updateText() {
                         fuc.getAnnouncement(this);
@@ -6446,7 +6446,7 @@
         }
 
         GM_registerMenuCommand('脚本说明', () => {
-            window.open('https://hclonely.github.io/auto-task/', '_blank');
+            window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank');
         });
         GM_registerMenuCommand('更新Steam信息', () => {
             new Promise(resolve => {
