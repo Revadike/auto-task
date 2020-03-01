@@ -61,6 +61,10 @@
 
     解决办法：每次点击`Fuck`按钮前都要手动完成人机验证
 
+3. `givekey.su`网站wss连接出错
+
+    解决办法：参考[#8](https://github.com/HCLonely/auto-task/issues/8)
+
 # 5.反馈方式
 
 1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new)提交
