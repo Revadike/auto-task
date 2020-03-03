@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         自动任务
 // @namespace    auto-task
-// @version      2.1.16
+// @version      2.1.17
 // @description  自动完成赠key站任务
 // @author       HCLonely
 // @license      MIT
@@ -33,7 +33,7 @@
 // @require      https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require      https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.16
+// @resource     css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.17
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_listValues
@@ -53,6 +53,293 @@
 (function() {
     'use strict';
 
+    const i18n = {
+        "zh-cn": {
+            language: "语言",
+            auto: "自动",
+            needBanana: "此key需要收集 s% 个香蕉, 是否继续?",
+            needPoints: "此key需要收集 s% , 是否继续?",
+            notice: "提示",
+            confirm: "确定",
+            cancel: "取消",
+            canceled: "已取消",
+            processTasksInfo: "正在处理任务信息...",
+            processTasksUrl: "正在处理任务链接（用时取决于Steam任务数量，请耐心等待）...",
+            getTasksInfo: "正在获取任务信息...",
+            allTasksComplete: "所有任务已完成！",
+            prysAllTasksComplete: "所有任务验证完成，请手动完成人机验证获取key!",
+            verifyTasksComplete: "所有任务验证完成！",
+            verifyingTask: "正在验证任务",
+            noKeysLeft: "此页面已经没有剩余key了, 是否关闭?",
+            logining: "正在登录...",
+            needLogin: "请先登录！",
+            fglTimeout: "正在 s% (如果长时间没反应，请打开控制台查看错误日志)...",
+            fglComplete: "任务完成，正在刷新页面（如果页面没有自动刷新，请手动刷新查看结果）...",
+            checkingUpdate: "正在检测更新...",
+            checkUpdate: "检查更新",
+            thisIsNew: "当前脚本为最新版本！",
+            updateNow: "立即更新至 ",
+            newVer: "检测到新版本: ",
+            getAnnouncement: "正在获取更新公告...",
+            visitHistory: "查看历史更新内容",
+            close: "关闭",
+            websiteSetting: "网站设置",
+            updateCommunityId: "正在更新Steam社区SessionID(用于加组退组)...",
+            updateStoreId: "正在更新Steam商店SessionID(用于添加愿望单、关注游戏、关注鉴赏家等)...",
+            joinGroup: "正在加入Steam组",
+            getGroupId: "正在获取Steam组ID",
+            leaveGroup: "正在退出Steam组",
+            followCurator: "正在关注鉴赏家",
+            unfollowCurator: "正在取关鉴赏家",
+            getDeveloperId: "正在获取开发商ID",
+            followDeveloper: "正在关注开发商",
+            unfollowDeveloper: "正在取关开发商",
+            getPublisherId: "正在获取发行商ID",
+            followPublisher: "正在关注发行商",
+            unfollowPublisher: "正在取关发行商",
+            addWishlist: "正在添加愿望单",
+            removeWishlist: "正在移除愿望单",
+            followGame: "正在关注游戏",
+            unfollowGame: "正在取关游戏",
+            likeAnnouncements: "正在点赞通知",
+            visitLink: "正在访问页面",
+            unknown: "未知操作",
+            joinGiveaway: "正在加入赠key...",
+            needJoinGiveaway: "请检查是否已加入此赠key!",
+            doing: "正在做任务",
+            unknowntype: "未知任务类型",
+            getIdFailed: "获取任务id失败！",
+            loadAnnouncementFailed: "加载公告失败",
+            checkConsole: "，详情请查看控制台",
+            setting: "设置",
+            visitUpdateText: "查看更新内容",
+            cleanCache: "清理缓存",
+            feedback: "提交建议/BUG",
+            cleaning: "正在清理缓存...",
+            readme: "脚本说明",
+            updateSteamInfo: "更新Steam信息",
+            updateSteamInfoComplete: "Steam信息更新完成",
+            cannotRemove: "没有可以移除的任务！",
+            joinLotteryComplete: "所有抽奖参加完成！",
+            noPoints: "点数不足，任务中止！",
+            getNeedPointsFailed: "获取抽奖需要点数失败，任务中止！",
+            joinLottery: "正在参加抽奖",
+            pointsLeft: "剩余点数: ",
+            getPointsFailed: "获取当前拥有点数失败！",
+            joinFreeLottery: "参加免费抽奖",
+            joinPointLottery: "参加点数抽奖",
+            getTaskIdFailed: "获取 s% 任务id失败!",
+            noAutoFinish: "没有检测到可以自动完成的任务！",
+            finishSelf: "没完成的请手动完成！",
+            getUrlFailed: "获取任务链接失败( s% )",
+            closeExtensions: "建议关闭脚本管理器和广告屏蔽插件再获取key！",
+            changeLanguage: "需要将页面语言设置为\"Русский\"(将页面右下角的自动翻译关闭)！",
+            connectWss: "正在连接WSS...",
+            connectWssWait: "正在连接WSS, 请稍候！",
+            beforeFuck: "每次点击\"Fuck\"按钮前请手动完成人机验证！！！",
+            getTaskStatus: "正在获取任务完成状态(时间稍长，请耐心等待)...",
+            wssConnected: "WSS已连接!",
+            wssConnectSuccess: "WSS连接成功",
+            wssDisconnected: "WSS连接断开！",
+            wssReconnect: "WSS连接断开，正在重连...",
+            noLogin: "您尚未登录！",
+            accessDenied: "访问被拒绝！",
+            notFound: "错误，找不到页面！",
+            serverError: "服务器错误！",
+            errorRefresh: "错误，请刷新页面！",
+            initFirst: "请先Init再做任务！",
+            initPlease: "请先点击Init按钮再点此按钮！",
+            getGroupFailed: "获取Steam组信息失败！",
+            openPage: "已打开任务页面",
+            getTaskUrlFailed: "获取任务链接失败",
+            notRobot: "触发人机验证，请完成验证后再点击\"Verify\"按钮验证任务！",
+            getVisitTimeFailed: "获取浏览时间失败",
+            doYourself: "请手动完成",
+            googleVerify: "谷歌验证",
+            getKey: "获取key",
+            fuckBtnTitle: "一键做任务+验证",
+            verifyBtnTitle: "一键验证任务",
+            joinBtnTitle: "一键加组、关注鉴赏家、关注游戏、添加愿望单...",
+            removeBtnTitle: "一键退组、取关鉴赏家、取关游戏、移除愿望单...",
+            showLog: "显示执行日志",
+            hideLog: "隐藏执行日志",
+            show: "展开",
+            hide: "收起",
+            taskLog: "任务执行日志",
+            saveSetting: "保存设置",
+            saveSuccess: "保存成功",
+            resetSetting: "重置所有设置",
+            resetSettingNotice: "是否重置所有设置?",
+            resetSettingSuccess: "重置成功",
+            resetSettingFailed: "重置失败",
+            resetSettingCancel: "已取消重置",
+            downloadSetting: "下载设置文件",
+            processSetting: "正在处理设置...",
+            creatUrlFailed: "创建下载链接失败！",
+            loadSetting: "加载设置文件",
+            readSetting: "正在读取设置文件...",
+            readSettingComplete: "设置文件读取完成！",
+            readSettingFailed: "读取设置文件失败！",
+            loadSettingComplete: "设置加载完成！",
+            loadSettingFailed: "设置加载失败",
+            notSupport: "当前浏览器不支持直接读取文件，已触发备用方案！",
+            copySetting: "请将设置文件里的内容复制到下面！",
+            loadSettingText: "正在加载设置...",
+            jsError: "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
+            ajaxError: "Ajax请求出错"
+        },
+        "en": {
+            language: "Language",
+            auto: "Auto",
+            needBanana: "This key needs to collect s% banana, do you want to continue?",
+            needPoints: "This key needs to collect s%, do you want to continue?",
+            notice: "Notice",
+            confirm: "OK",
+            cancel: "Cancel",
+            cancelled: "Cancelled",
+            processTasksInfo: "Processing task information...",
+            processTasksUrl: "Processing task link (time depends on the number of Steam tasks, please be patient)...",
+            getTasksInfo: "Getting task information...",
+            allTasksComplete: "All tasks completed!",
+            prysAllTasksComplete: "All tasks are verified, please complete the man-machine verification to get the key!",
+            verifyTasksComplete: "All tasks verified!",
+            verifyingTask: "Verifying task",
+            noKeysLeft: "This page has no remaining keys, do you want to close?",
+            logining: "Logining...",
+            needLogin: "Login please!",
+            fglTimeout: "Doing \"s%\" (If there is no response for a long time, please open the console to view the error log)...",
+            fglComplete: "The task is completed and the page is being refreshed (if the page does not refresh automatically, please refresh it manually to view the results)...",
+            checkingUpdate: "Checking for updates...",
+            checkUpdate: "Check for updates",
+            thisIsNew: "The current script is the latest version!",
+            updateNow: "Update to ",
+            newVer: "New version available: ",
+            getAnnouncement: "Getting update announcement...",
+            visitHistory: "History",
+            close: "Close",
+            websiteSetting: "website settings",
+            updateCommunityId: "Updating Steam Community SessionID (for joining and leaving groups)...",
+            updateStoreId: "Updating Steam Store SessionID (for adding to wishlist, following game, following curator, etc.)...",
+            joinGroup: "Joining the Steam group",
+            getGroupId: "Getting Steam group ID",
+            leaveGroup: "Leaving Steam group",
+            followCurator: "Following curator",
+            unfollowCurator: "Unfollowing curator",
+            getDeveloperId: "Getting developer ID",
+            followDeveloper: "Following developer",
+            unfollowDeveloper: "Unfollowing developer",
+            getPublisherId: "Getting publisher ID",
+            followPublisher: "Following publisher",
+            unfollowPublisher: "Unfollowing publisher",
+            addWishlist: "Adding to wishlist",
+            removeWishlist: "Removing from wishlist",
+            followGame: "Following game",
+            unfollowGame: "Unfollowing gema",
+            likeAnnouncements: "Liking announcement",
+            visitLink: "Visiting page",
+            unknown: "Unknown operation",
+            joinGiveaway: "Joining giveaway...",
+            needJoinGiveaway: "Please check if this giveaway has been joined!",
+            doing: "Doing task",
+            unknowntype: "Unknown task type",
+            getIdFailed: "Failed to get task id!",
+            loadAnnouncementFailed: "Loading announcement failed",
+            checkConsole: ", see console for details",
+            setting: "Setting",
+            visitUpdateText: "View updates",
+            cleanCache: "Clear cache",
+            feedback: "Feedback",
+            cleaning: "Clearing cache...",
+            readme: "Script description",
+            updateSteamInfo: "Update Steam Information",
+            updateSteamInfoComplete: "Steam information update completed",
+            cannotRemove: "No tasks can be removed!",
+            joinLotteryComplete: "All giveaways have been joined!",
+            noPoints: "Not enough points, task aborted!",
+            getNeedPointsFailed: "Failed to get points for joining giveaway, task aborted!",
+            joinLottery: "Joining giveaway",
+            pointsLeft: "Points remaining: ",
+            getPointsFailed: "Failed to get points currently owned!",
+            joinFreeLottery: "Join free giveaway",
+            joinPointLottery: "Join points giveaway",
+            getTaskIdFailed: "Failed to get s% task id!",
+            noAutoFinish: "No tasks detected that could be done automatically!",
+            finishSelf: "Unfinished tasks please do it yourself!",
+            getUrlFailed: "Failed to get task link( s% )",
+            closeExtensions: "It is recommended to close the script manager and the ad blocking plugin before obtaining the key!",
+            changeLanguage: "Need to set the page language to \"Русский\"(Turn off automatic translation in the bottom right corner of the page)!",
+            connectWss: "Connecting to WSS...",
+            connectWssWait: "Connecting to WSS, please wait!",
+            beforeFuck: "Please complete the verification before clicking the \"Fuck\" button!!!",
+            getTaskStatus: "Getting task completion status (a little longer, please be patient)...",
+            wssConnected: "WSS is connected!",
+            wssConnectSuccess: "WSS connection succeeded",
+            wssDisconnected: "WSS is disconnected!",
+            wssReconnect: "WSS is disconnected, reconnecting...",
+            noLogin: "You have not logged in!",
+            accessDenied: "Access denied!",
+            notFound: "Error, page not found!",
+            serverError: "Server error!",
+            errorRefresh: "Error, please refresh the page!",
+            initFirst: "Please Init before doing the task!",
+            initPlease: "Please click the Init button before clicking this button!",
+            getGroupFailed: "Failed to get Steam group information!",
+            openPage: "Task page opened",
+            getTaskUrlFailed: "Failed to get task link",
+            notRobot: "Trigger human-machine verification, please complete the verification and then click the \"Verify\" button to verify the task",
+            getVisitTimeFailed: "Failed to get visit time",
+            doYourself: "Please complete ",
+            googleVerify: "Google verification",
+            getKey: " to get key",
+            fuckBtnTitle: "Complete and verify tasks",
+            verifyBtnTitle: "Verify tasks",
+            joinBtnTitle: "Join group, follow curator, follow game, add to wishlist...",
+            removeBtnTitle: "Leave group, unfollow curator, unfollow game, remove from wishlist...",
+            showLog: "Show execution log",
+            hideLog: "Hide execution log",
+            show: "Show",
+            hide: "Hide",
+            taskLog: "Task execution log",
+            saveSetting: "Save settings",
+            saveSuccess: "Saved successfully",
+            resetSetting: "Reset all settings",
+            resetSettingNotice: "Do you want to reset all settings?",
+            resetSettingSuccess: "Reset succeeded",
+            resetSettingFailed: "Reset failed",
+            resetSettingCancel: "Canceled reset",
+            downloadSetting: "Download the settings file",
+            processSetting: "Processing settings...",
+            creatUrlFailed: "Failed to create download link!",
+            loadSetting: "Load settings file",
+            readSetting: "Reading settings file...",
+            readSettingComplete: "Setting file read completed!",
+            readSettingFailed: "Failed to read the settings file!",
+            loadSettingComplete: "Settings are loaded!",
+            loadSettingFailed: "Failed to load settings",
+            notSupport: "The current browser does not support reading files directly, an alternative has been triggered!",
+            copySetting: "Please copy the contents of the settings file to the following",
+            loadSettingText: "Loading settings...",
+            jsError: "Script execution error, please see the console for details (red background part)!",
+            ajaxError: "Ajax request error"
+        }
+    };
+    let language = getLanguage();
+
+    function getLanguage() {
+        let lan = GM_getValue("language") || "auto";
+        if (lan === "auto") {
+            let browserLanguage = (navigator.browserLanguage || navigator.language).toLowerCase();
+            lan = browserLanguage.includes("en") ? "en" : "zh-cn";
+        }
+        return lan;
+    }
+
+    function getI18n(name, str = null) {
+        let value = "null";
+        if (str) value = i18n[language][name] ? i18n[language][name].replace("s%", str) : "null";
+        else value = i18n[language][name] || "null";
+        return value;
+    }
     GM_addStyle(GM_getResourceText('css'));
     $('body').append('<div v-cloak id="vue-ui"></div>');
     let vueUi = new Vue({
@@ -63,7 +350,7 @@
             vueUi.$message({
                 type: "error",
                 duration: 0,
-                message: "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
+                message: getI18n("jsError"),
                 showClose: true
             });
         }, 500);
@@ -73,10 +360,10 @@
         vueUi.$message({
             type: "error",
             duration: 0,
-            message: "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
+            message: getI18n("jsError"),
             showClose: true
         });
-        console.log("%c%s", "color:white;background:red", "Ajax请求出错：");
+        console.log("%c%s", "color:white;background:red", getI18n("ajaxError") + "：");
         console.log("Event:", event);
         console.log("XMLHttpRequest :", xhr);
         console.log("Options:", options);
@@ -1024,7 +1311,7 @@
                 let status = false;
                 if (s) status = this.echoLog({
                     type: 'custom',
-                    text: `<li>正在检测更新...<font></font></li>`
+                    text: `<li>${getI18n("checkingUpdate")}<font></font></li>`
                 });
                 this.httpRequest({
                     url: "https://github.com/HCLonely/auto-task/raw/master/version?t=" + new Date().getTime(),
@@ -1034,20 +1321,20 @@
                         if (debug) console.log(response);
                         if (response.response && response.response.version === GM_info.script.version) {
                             v.icon = "el-icon-refresh";
-                            v.title = "检查更新";
-                            if (s) status.success("当前脚本为最新版本！");
+                            v.title = getI18n("checkUpdate");
+                            if (s) status.success(getI18n("thisIsNew"));
                             v.hidden = true;
                         } else if (response.response) {
                             v.icon = "el-icon-download";
-                            v.title = "立即更新至" + response.response.version;
+                            v.title = getI18n("updateNow") + response.response.version;
                             v.checkUpdate = function() {
                                 window.open("https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js", "_blank")
                             };
-                            if (s) status.success("检测到新版本:" + response.response.version);
+                            if (s) status.success(getI18n("newVer") + response.response.version);
                             v.hidden = false;
                         } else {
                             v.icon = "el-icon-refresh";
-                            v.title = "检查更新";
+                            v.title = getI18n("checkUpdate");
                             if (s) status.error("Error:" + (response.statusText || response.status));
                         }
                         let conf = GM_getValue("conf") || defaultConf;
@@ -1060,19 +1347,19 @@
                     ontimeout: (response) => {
                         if (debug) console.log(response);
                         v.icon = "el-icon-refresh";
-                        v.title = "检查更新";
+                        v.title = getI18n("checkUpdate");
                         if (s) status.error("Error:Timeout(0)");
                     },
                     onabort: (response) => {
                         if (debug) console.log(response);
                         v.icon = "el-icon-refresh";
-                        v.title = "检查更新";
+                        v.title = getI18n("checkUpdate");
                         if (s) status.error("Error:Abort(0)");
                     },
                     onerror: (response) => {
                         if (debug) console.log(response);
                         v.icon = "el-icon-refresh";
-                        v.title = "检查更新";
+                        v.title = getI18n("checkUpdate");
                         if (s) status.error("Error:Error(0)");
                     },
                     status
@@ -1082,7 +1369,7 @@
                 v.announcementIcon = "el-icon-loading";
                 let status = this.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取更新公告...<font></font></li>`
+                    text: `<li>${getI18n("getAnnouncement")}<font></font></li>`
                 });
                 this.httpRequest({
                     url: "https://github.com/HCLonely/auto-task/raw/master/new.json?t=" + new Date().getTime(),
@@ -1106,8 +1393,8 @@
                                 title: `V${data.version}(${fuc.dateFormat("YYYY-mm-dd HH:MM", new Date(data.time))})`,
                                 message: h('div', null, hArr),
                                 showCancelButton: true,
-                                confirmButtonText: '查看历史更新内容',
-                                cancelButtonText: '关闭'
+                                confirmButtonText: getI18n("visitHistory"),
+                                cancelButtonText: getI18n("close")
                             }).then(() => {
                                 window.open("https://blog.hclonely.com/auto-task/announcement.html", "_blank");
                             }).catch(() => {});
@@ -1144,7 +1431,7 @@
                 new Vue({
                     el: `#${settingName}`,
                     data: {
-                        header: `${header}网站设置`,
+                        header: `${header} ${getI18n("websiteSetting")}`,
                         checked: GM_getValue('conf') ? GM_getValue('conf')[settingName] ? (!!GM_getValue('conf')[settingName].load) : false : false,
                         fuck: {
                             checkAll: fuckOptions.length === checkedFucks.length,
@@ -1218,67 +1505,67 @@
                 let ele = '';
                 switch (e.type) {
                     case 'updateSteamCommunity':
-                        ele = $(`<li>正在更新Steam社区SessionID(用于加组退组)...<font></font></li>`);
+                        ele = $(`<li>${getI18n("updateCommunityId")}<font></font></li>`);
                         break;
                     case 'updateSteamStore':
-                        ele = $(`<li>正在更新Steam商店SessionID(用于添加愿望单、关注游戏、关注鉴赏家等)...<font></font></li>`);
+                        ele = $(`<li>${getI18n("updateStoreId")}<font></font></li>`);
                         break;
                     case 'joinSteamGroup':
-                        ele = $(`<li>正在加入Steam组<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("joinGroup")}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'getGroupId':
-                        ele = $(`<li>正在获取Steam组ID<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("getGroupId")}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'leaveSteamGroup':
-                        ele = $(`<li>正在退出Steam组<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("leaveGroup")}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'followCurator':
-                        ele = $(`<li>正在关注鉴赏家<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("followCurator")}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'unfollowCurator':
-                        ele = $(`<li>正在取关鉴赏家<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("unfollowCurator")}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'getDeveloperId':
-                        ele = $(`<li>正在获取开发商ID<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("getDeveloperId")}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'followDeveloper':
-                        ele = $(`<li>正在关注开发商<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("followDeveloper")}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'unfollowDeveloper':
-                        ele = $(`<li>正在取关开发商<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("unfollowDeveloper")}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'getPublisherId':
-                        ele = $(`<li>正在获取发行商ID<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("getPublisherId")}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'followPublisher':
-                        ele = $(`<li>正在关注发行商<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("followPublisher")}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'unfollowPublisher':
-                        ele = $(`<li>正在取关发行商<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("unfollowPublisher")}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'addWishlist':
-                        ele = $(`<li>正在添加愿望单<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("addWishlist")}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'removeWishlist':
-                        ele = $(`<li>正在移除愿望单<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("removeWishlist")}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'followGame':
-                        ele = $(`<li>正在关注游戏<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("followGame")}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'unfollowGame':
-                        ele = $(`<li>正在取关游戏<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("unfollowGame")}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'likeAnnouncements':
-                        ele = $(`<li>正在点赞通知<a href="${e.url}" target="_blank">${e.id}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("likeAnnouncements")}<a href="${e.url}" target="_blank">${e.id}</a>...<font></font></li>`);
                         break;
                     case 'visitLink':
-                        ele = $(`<li>正在访问页面<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
+                        ele = $(`<li>${getI18n("visitLink")}...<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`);
                         break;
                     case 'custom':
                         ele = $(e.text);
                         break;
                     default:
-                        ele = $(`<li>未知操作...<font></font></li>`);
+                        ele = $(`<li>${getI18n("unknown")}<font></font></li>`);
                         break;
                 }
                 $('.fuck-task-logs .el-notification__content').append(ele);
@@ -1326,7 +1613,6 @@
                     "H+": date.getHours().toString(), // 时
                     "M+": date.getMinutes().toString(), // 分
                     "S+": date.getSeconds().toString() // 秒
-                    // 有其他格式化字符需求可以继续添加，必须转化成字符串
                 };
                 for (let k in opt) {
                     ret = new RegExp("(" + k + ")").exec(fmt);
@@ -1370,7 +1656,7 @@
                     if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo;
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在获取任务信息...<font></font></li>`
+                        text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                     });
                     let tasks = $('#actions tr');
                     for (let task of tasks) {
@@ -1454,7 +1740,7 @@
                 //处理任务链接
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在处理任务链接（用时取决于Steam任务数量，请耐心等待）...<font></font></li>`
+                    text: `<li>${getI18n("processTasksUrl")}<font></font></li>`
                 });
                 let pro = [];
                 for (let link of this.taskInfo.links) {
@@ -1629,11 +1915,11 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务执行完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                             if (act === 'join') fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">建议关闭脚本管理器和广告屏蔽插件再获取key！</font></li>`
+                                text: `<li><font class="warning">${getI18n("closeExtensions")}</font></li>`
                             });
                         });
 
@@ -1661,9 +1947,9 @@
             },
             checkLeft: function(ui) {
                 if ($(".giveaway-ended").length > 0) {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -1710,7 +1996,7 @@
                     this.links = [];
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在获取任务信息...<font></font></li>`
+                        text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                     });
 
                     let tasksContainer = $('.container_task');
@@ -1763,7 +2049,7 @@
                         if (this.tasks.length === 0) {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                             if (this.conf.fuck.verify) this.verify();
                         } else {
@@ -1772,12 +2058,12 @@
                     } else if (callback === 'verify') {
                         this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font></li>`
                         });
                     } else {
                         !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                            text: `<li><font class="warning">${getI18n("cannotRemove")}</font></li>`
                         });
                     }
                 }
@@ -1823,7 +2109,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -1835,7 +2121,7 @@
                     for (let task of fuc.unique(this.tasks)) {
                         let status = fuc.echoLog({
                             type: 'custom',
-                            text: `<li>正在验证任务${task.taskDes}...<font></font></li>`
+                            text: `<li>${getI18n("verifyingTask")}${task.taskDes}...<font></font></li>`
                         });
                         pro.push(new Promise((resolve) => {
                             fuc.httpRequest({
@@ -1888,7 +2174,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a class="hclonely-google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font><font class="warning">${getI18n("doYourself")}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n("googleVerify")}</a>${getI18n("getKey")}!</font></li>`
                         });
                         $("#get_key_container").show();
                         $(".hclonely-google").unbind();
@@ -1921,7 +2207,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -1958,9 +2244,9 @@
             checkLeft: function(ui) {
                 if ($("h3.text-danger:contains(this giveaway is closed)").length > 0) {
                     $("#link_to_click").remove();
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -1990,12 +2276,12 @@
                 let needBanana = $("p:contains('Collect'):contains('banana')");
                 let needPoints = $("p:contains('Collect'):contains('point')");
                 let msg = '';
-                if (needBanana.length > 0) msg = "此key需要收集" + needBanana.text().match(/[\d]+/gim)[0] + "个香蕉！, 是否继续?";
-                if (needPoints.length > 0) msg = "此key需要收集" + needPoints.text().replace(/Collect/gi, "") + ", 是否继续?";
+                if (needBanana.length > 0) msg = getI18n("needBanana", needBanana.text().match(/[\d]+/gim)[0]);
+                if (needPoints.length > 0) msg = getI18n("needPoints", needPoints.text().replace(/Collect/gi, ""));
                 if (needPoints.length > 0 || needBanana.length > 0) {
-                    vue.$confirm(msg, '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    vue.$confirm(msg, getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning'
                     }).then(() => {
                         this.get_tasks('do_task');
@@ -2020,7 +2306,7 @@
 
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在处理任务信息...<font></font></li>`
+                        text: `<li>${getI18n("processTasksInfo")}<font></font></li>`
                     });
 
                     let tasksUl = $('ul.tasks li:not(:contains(Completed))');
@@ -2126,12 +2412,12 @@
                         } else if (callback === 'verify') {
                             this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         } else {
                             !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                                text: `<li><font class="warning">${getI18n("cannotRemove")}</font></li>`
                             });
                         }
                     });
@@ -2183,7 +2469,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -2195,7 +2481,7 @@
                     for (let task of fuc.unique(this.tasks)) {
                         let status = fuc.echoLog({
                             type: 'custom',
-                            text: `<li>正在验证任务${task.taskDes}...<font></font></li>`
+                            text: `<li>${getI18n("verifyingTask")}${task.taskDes}...<font></font></li>`
                         });
                         pro.push(new Promise((resolve) => {
                             fuc.httpRequest({
@@ -2218,7 +2504,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font></li>`
                         });
                         if (this.verifyBtn.length > 0) {
                             this.verifyBtn.removeAttr("disabled")[0].click();
@@ -2265,7 +2551,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -2305,9 +2591,9 @@
             },
             checkLeft: function(ui) {
                 if ($(".left b").text() === "0") {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -2345,7 +2631,7 @@
             get_tasks: function(callback = 'do_task') {
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取任务信息...<font></font></li>`
+                    text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                 });
                 let verifyBtns = $("[id^=listOfTasks_btnVerify]:not(:contains(VERIFIED))");
                 let allVerifyBtns = $("[id^=listOfTasks_btnVerify]");
@@ -2379,7 +2665,7 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     }
@@ -2521,7 +2807,7 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font></li>`
                         });
                     }
                 } else if (callback === "remove") {
@@ -2546,14 +2832,14 @@
                         } else {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">没有可以移除的任务！</font></li>`
+                                text: `<li><font class="success">${getI18n("cannotRemove")}</font></li>`
                             });
                         }
                     }
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">未知操作！</font></li>`
+                        text: `<li><font class="error">${getI18n("unknown")}！</font></li>`
                     });
                 }
                 status.success();
@@ -2573,7 +2859,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -2585,7 +2871,7 @@
                     for (let task of fuc.unique(this.tasks)) {
                         let status = fuc.echoLog({
                             type: 'custom',
-                            text: `<li>正在验证任务${task.taskDes}...<font></font></li>`
+                            text: `<li>${getI18n("verifyingTask")}${task.taskDes}...<font></font></li>`
                         });
                         pro.push(new Promise((resolve) => {
                             fuc.httpRequest({
@@ -2638,7 +2924,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font><font class="warning">请手动完成<a class="hclonely-google" href="javascript:void(0)" target="_self">谷歌验证</a>获取key!</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font><font class="warning">${getI18n("doYourself")}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n("googleVerify")}</a>${getI18n("getKey")}!</font></li>`
                         });
                         $(".hclonely-google").unbind();
                         $(".hclonely-google").click(() => {
@@ -2663,7 +2949,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -2694,9 +2980,9 @@
             checkLeft: function(ui) {
                 if ($(".text-danger:contains(this giveaway is closed)").length > 0) {
                     $("#link_to_click").remove();
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -2725,7 +3011,7 @@
             get_tasks: function(callback = 'do_task') {
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取任务信息...<font></font></li>`
+                    text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                 });
                 let verifyBtns = $("button[data-id]");
                 if (callback === 'do_task') {
@@ -2758,7 +3044,7 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     }
@@ -2778,18 +3064,18 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font></li>`
                         });
                     }
                 } else if (callback === "remove") {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="success">没有可以移除的任务！</font></li>`
+                        text: `<li><font class="success">${getI18n("cannotRemove")}</font></li>`
                     });
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">未知操作！</font></li>`
+                        text: `<li><font class="error">${getI18n("unknown")}！</font></li>`
                     });
                 }
                 status.success();
@@ -2834,7 +3120,7 @@
                             Promise.all(pro).finally(resolve => {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="success">所有任务已完成！</font></li>`
+                                    text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                                 });
                                 if (this.conf.fuck.verify) this.verify();
                             });
@@ -2856,7 +3142,7 @@
                                 let task = e;
                                 let status = fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li>正在验证任务<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>`
+                                    text: `<li>${getI18n("verifyingTask")}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>`
                                 });
                                 pro.push(new Promise((resolve) => {
                                     fuc.httpRequest({
@@ -2905,7 +3191,7 @@
                                 Promise.all(pro).finally(resolve => {
                                     fuc.echoLog({
                                         type: 'custom',
-                                        text: `<li><font class="success">所有任务验证完成！</font></li>`
+                                        text: `<li><font class="success">${getI18n("verifyTasksComplete")}</font></li>`
                                     });
                                 });
                             }
@@ -2918,7 +3204,7 @@
             remove: function(remove = false) {
                 fuc.echoLog({
                     type: 'custom',
-                    text: `<li><font class="success">没有可以移除的任务！</font></li>`
+                    text: `<li><font class="success">${getI18n("cannotRemove")}</font></li>`
                 });
             },
             get_giveawayId: function() {
@@ -2932,9 +3218,9 @@
             checkLogin: function() {},
             checkLeft: function(ui) {
                 if ($(".giveaway-counter:first .strong").text() === "0") {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -2963,7 +3249,7 @@
             get_tasks: function(callback = 'do_task') {
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取任务信息...<font></font></li>`
+                    text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                 });
                 let steps = $("#steps tbody tr");
                 for (let i = 0; i < steps.length; i++) {
@@ -3022,7 +3308,7 @@
                             } else {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="success">所有任务已完成！</font></li>`
+                                    text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                                 });
                                 if (this.conf.fuck.verify) this.verify();
                             }
@@ -3038,7 +3324,7 @@
                         } else {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                             if (this.conf.fuck.verify) this.verify();
                         }
@@ -3058,9 +3344,8 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成，请手动完成人机验证获取key!</font></li>`
+                            text: `<li><font class="success">${getI18n("prysAllTasksComplete")}</font></li>`
                         });
-                        //fuc.echoLog({type: 'custom', text: `<li><font class="warning">如果没有显示人机验证，说明有的任务显示成功实际上没完成，请刷新页面查看并手动完成!</font></li>`});
                     }
                 } else if (callback === "remove") {
                     let taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']');
@@ -3109,7 +3394,7 @@
                                 } else {
                                     fuc.echoLog({
                                         type: 'custom',
-                                        text: `<li><font class="success">没有可以移除的任务！</font></li>`
+                                        text: `<li><font class="success">${getI18n("cannotRemove")}</font></li>`
                                     });
                                 }
                             });
@@ -3122,7 +3407,7 @@
                             } else {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="success">没有可以移除的任务！</font></li>`
+                                    text: `<li><font class="success">${getI18n("cannotRemove")}</font></li>`
                                 });
                             }
                         }
@@ -3130,7 +3415,7 @@
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">未知操作！</font></li>`
+                        text: `<li><font class="error">${getI18n("unknown")}！</font></li>`
                     });
                 }
                 status.success();
@@ -3158,7 +3443,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -3170,7 +3455,7 @@
                     for (let task of fuc.unique(this.tasks)) {
                         let status = fuc.echoLog({
                             type: 'custom',
-                            text: `<li>正在验证任务${task.taskDes}...<font></font></li>`
+                            text: `<li>${getI18n("verifyingTask")}${task.taskDes}...<font></font></li>`
                         });
                         pro.push(new Promise((resolve) => {
                             this.checkStep(task.id, resolve, status);
@@ -3179,9 +3464,8 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务验证完成，请手动完成人机验证获取key!</font></li>`
+                            text: `<li><font class="success">${getI18n("prysAllTasksComplete")}</font></li>`
                         });
-                        //fuc.echoLog({type: 'custom', text: `<li><font class="warning">如果没有显示人机验证，说明有的任务显示成功实际上没完成，请刷新页面查看并手动完成!</font></li>`});
                     });
                 } else {
                     this.get_tasks('verify');
@@ -3248,7 +3532,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -3287,9 +3571,9 @@
             checkLeft: function(ui) {
                 let left = $("#header").text().match(/([\d]+).*?prize.*?left/);
                 if (!(left.length > 0 && left[1] !== "0")) {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -3317,13 +3601,13 @@
             fuck: function() {
                 if ($("a.buttonenter:contains(Register to join)").length > 0) fuc.echoLog({
                     type: 'custom',
-                    text: `<li><font class="error">请先登录！</font></li>`
+                    text: `<li><font class="error">${getI18n("needLogin")}</font></li>`
                 });
                 let currentoption = $("a.buttonenter.buttongiveaway");
                 if (/join giveaway/gim.test(currentoption.text())) {
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在加入赠key...<font></font></li>`
+                        text: `<li>${getI18n("joinGiveaway")}<font></font></li>`
                     });
                     let do_task = this.do_task;
                     fuc.httpRequest({
@@ -3357,7 +3641,7 @@
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">请检查是否已加入此赠key!</font></li>`
+                        text: `<li><font class="error">${getI18n("needJoinGiveaway")}</font></li>`
                     });
                 }
             },
@@ -3377,7 +3661,7 @@
                         if (!promo.hasClass("buttonentered")) {
                             let status = fuc.echoLog({
                                 type: 'custom',
-                                text: `<li>正在做任务:${promo.parents("p").text()}...<font></font></li>`
+                                text: `<li>${getI18n("doing")}:${promo.parents("p").text()}...<font></font></li>`
                             });
                             if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
                                 pro.push(new Promise(resolve => {
@@ -3509,20 +3793,20 @@
                                     });
                                 }));
                             } else {
-                                status.error("Error:未知任务类型");
+                                status.error("Error:" + getI18n("unknowntype"));
                             }
                         }
                     }
                     Promise.all(pro).finally(() => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="warning">所有任务已完成！</font></li>`
+                            text: `<li><font class="warning">${getI18n("allTasksComplete")}</font></li>`
                         });
                     });
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">获取任务id失败！</font></li>`
+                        text: `<li><font class="error">${getI18n("getIdFailed")}</font></li>`
                     });
                 }
             },
@@ -3561,7 +3845,7 @@
                         if (end) {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有抽奖参加完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("joinLotteryComplete")}</font></li>`
                             });
                         } else {
                             let item = arr[i];
@@ -3569,12 +3853,12 @@
                             if (type === "points" && needPoints && parseInt(needPoints[0]) > myPoint) {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="warning">点数不足，任务中止！</font></li>`
+                                    text: `<li><font class="warning">${getI18n("noPoints")}</font></li>`
                                 });
                             } else if (type === "points" && !needPoints) {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="warning">获取抽奖需要点数失败，任务中止！</font></li>`
+                                    text: `<li><font class="warning">${getI18n("getNeedPointsFailed")}</font></li>`
                                 });
                             } else {
                                 if (type === "points" && parseInt(needPoints[0]) > maxPoint) {
@@ -3584,7 +3868,7 @@
                                 } else {
                                     let status = fuc.echoLog({
                                         type: 'custom',
-                                        text: `<li>正在参加抽奖<a href="${$(item).find("a.giveaways-page-item-img-btn-more").attr("href")}" target="_blank">${$(item).find(".giveaways-page-item-footer-name").text().trim()}</a>...<font></font></li>`
+                                        text: `<li>${getI18n("joinLottery")}<a href="${$(item).find("a.giveaways-page-item-img-btn-more").attr("href")}" target="_blank">${$(item).find(".giveaways-page-item-footer-name").text().trim()}</a>...<font></font></li>`
                                     });
                                     let a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')");
                                     if (a.attr("onclick") && a.attr("onclick").includes('checkUser')) {
@@ -3603,7 +3887,7 @@
                                                     status.success();
                                                     let points = response.responseText.match(/Points:[\s]*?([\d]+)/);
                                                     if (type === "points" && points) {
-                                                        if (debug) console.log('剩余点数: ' + points[1]);
+                                                        if (debug) console.log(getI18n("pointsLeft") + points[1]);
                                                         opiumpulses.myPoints = parseInt(points[1]);
                                                     }
                                                 } else {
@@ -3635,7 +3919,7 @@
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="error">获取当前拥有点数失败！</font></li>`
+                        text: `<li><font class="error">${getI18n("getPointsFailed")}</font></li>`
                     });
                 }
             },
@@ -3646,10 +3930,10 @@
             setting: {
                 'fuck': true,
                 'fuckText': 'Free',
-                'fuckTitle': '参加免费抽奖',
+                'fuckTitle': getI18n("joinFreeLottery"),
                 'verify': true,
                 'verifyText': 'Point',
-                'verifyTitle': '参加点数抽奖',
+                'verifyTitle': getI18n("joinPointLottery"),
                 'join': false,
                 'remove': false
             },
@@ -3668,28 +3952,28 @@
                 if (!$("#btngo").text().includes("Получить ключ")) {
                     fuc.echoLog({
                         type: "custom",
-                        text: `<li><font class="error">需要将页面语言设置为"Русский"(将页面右下角的自动翻译关闭)！</font></li>`
+                        text: `<li><font class="error">${getI18n("changeLanguage")}</font></li>`
                     });
                 } else {
                     givekey.wssApp.message = btnArea.$message({
-                        message: "正在连接WSS...",
+                        message: getI18n("connectWss"),
                         duration: 0
                     });
                     $(() => givekey.wssApp.init(btnArea));
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="warning">正在连接WSS, 请稍候！</font></li>`
+                        text: `<li><font class="warning">${getI18n("connectWssWait")}</font></li>`
                     });
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="warning">每次点击"Fuck"按钮前请手动完成人机验证！！！</font></li>`
+                        text: `<li><font class="warning">${getI18n("beforeFuck")}</font></li>`
                     });
                 }
             },
             analyze_tasks: function(tasks) {
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在处理任务信息（用时取决于Steam任务数量，请耐心等待）...<font></font></li>`
+                    text: `<li>${getI18n("processTasksUrl")}<font></font></li>`
                 });
                 let pro = [];
                 this.groups = [];
@@ -3762,7 +4046,7 @@
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="warning">没有可以自动完成的任务！</font></li>`
+                            text: `<li><font class="warning">${getI18n("noAutoFinish")}</font></li>`
                         });
                     }
                     GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo);
@@ -3779,7 +4063,7 @@
                     let pro = [];
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在获取任务信息...<font></font></li>`
+                        text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                     });
 
                     let tasksContainer = $("a[id^=task_]");
@@ -3822,7 +4106,7 @@
                         } else {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                                text: `<li><font class="warning">${getI18n("cannotRemove")}</font></li>`
                             });
                         }
                     });
@@ -3874,7 +4158,7 @@
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                     });
                 });
@@ -3882,7 +4166,7 @@
             verify: function() {
                 givekey.wssApp.status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取任务完成状态(时间稍长，请耐心等待)...<font></font></li>`
+                    text: `<li>${getI18n("getTaskStatus")}<font></font></li>`
                 });
                 givekey.wssApp.request('/distribution/check', 'post', {
                     id: location.href.match(/[\d]+/)[0],
@@ -3924,7 +4208,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -3941,11 +4225,11 @@
                     uid: $('meta[name="uid"]').attr("content"),
                     init: function(m) {
                         this.centrifuge.setToken($('meta[name="cent_token"]').attr("content")), this.centrifuge.connect(), this.centrifuge.on("connect", function(e) {
-                            if (debug) console.log(`WSS已连接!`);
+                            if (debug) console.log(getI18n("wssConnected"));
                             $("#verify-task").removeClass("is-disabled").removeAttr("disabled");
                             givekey.wssApp.message.close();
                             m.$message({
-                                message: "WSS连接成功！",
+                                message: getI18n("wssConnectSuccess"),
                                 type: "success"
                             });
                             for (let a of $('a[id^=task_]')) {
@@ -3962,10 +4246,10 @@
                                 );
                             }
                         }), this.centrifuge.on("disconnect", function(e) {
-                            if (debug) console.log(`WSS连接断开!\n${e.reason}`);
+                            if (debug) console.log(`${getI18n("wssDisconnected")}\n${e.reason}`);
                             $("#verify-task").addClass("is-disabled").attr("disabled", "disabled");
                             givekey.wssApp.message = m.$message({
-                                message: "WSS连接断开，正在重连...",
+                                message: getI18n("wssReconnect"),
                                 type: "warning",
                                 duration: 0
                             });
@@ -4007,19 +4291,19 @@
                                     if (debug) console.log(e);
                                     switch (e.status) {
                                         case 401:
-                                            givekey.wssApp.status.error("您尚未登录！");
+                                            givekey.wssApp.status.error(getI18n("noLogin"));
                                             break;
                                         case 403:
-                                            givekey.wssApp.status.error("访问被拒绝！");
+                                            givekey.wssApp.status.error(getI18n("accessDenied"));
                                             break;
                                         case 404:
-                                            givekey.wssApp.status.error("错误，找不到页面！");
+                                            givekey.wssApp.status.error(getI18n("notFound"));
                                             break;
                                         case 500:
-                                            givekey.wssApp.status.error("服务器错误！");
+                                            givekey.wssApp.status.error(getI18n("serverError"));
                                             break;
                                         case 503:
-                                            givekey.wssApp.status.error("错误，请刷新页面！");
+                                            givekey.wssApp.status.error(getI18n("errorRefresh"));
                                             break;
                                         default:
                                             givekey.wssApp.status.error("Error:" + e.status);
@@ -4064,9 +4348,9 @@
             },
             checkLeft: function(ui) {
                 if ($("#keys_count").text() === "0") {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -4089,10 +4373,10 @@
             setting: {
                 'fuck': true,
                 'fuckText': 'Init',
-                'fuckTitle': '请先Init再做任务！',
+                'fuckTitle': getI18n("initFirst"),
                 'verify': true,
                 'verifyText': 'Fuck',
-                'verifyTitle': '请先点击Init按钮再点此按钮！',
+                'verifyTitle': getI18n("initPlease"),
                 'join': false,
                 'remove': true
             },
@@ -4159,7 +4443,7 @@
                         if (userInfo) {
                             let status = fuc.echoLog({
                                 type: 'custom',
-                                text: `<li>正在登录...<font></font></li>`
+                                text: `<li>${getI18n("logining")}<font></font></li>`
                             });
                             fuc.httpRequest({
                                 url: "https://freegamelottery.com/user/login",
@@ -4181,7 +4465,7 @@
                         } else {
                             vue.$message({
                                 type: 'warning',
-                                message: "请先登录！"
+                                message: getI18n("needLogin")
                             });
                             $("a.registration-button")[0].click();
                             $("button[value=Login]").click(() => {
@@ -4196,7 +4480,7 @@
                     } else {
                         vue.$message({
                             type: 'warning',
-                            message: "请先登录！"
+                            message: getI18n("needLogin")
                         });
                         $("a.registration-button")[0].click();
                     }
@@ -4209,7 +4493,7 @@
                 if (this.conf.fuck.doTask) {
                     let main = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在Visit MAIN DRAW(如果长时间没反应，请打开控制台查看错误日志)...<font></font></li>`
+                        text: `<li>${getI18n("fglTimeout","Visit MAIN DRAW")}<font></font></li>`
                     });
                     $.post('/draw/register-visit', {
                             drawId: DashboardApp.draws.main.actual.id
@@ -4219,7 +4503,7 @@
                             main.success();
                             let survey = fuc.echoLog({
                                 type: 'custom',
-                                text: `<li>正在Visit SURVEY DRAW(如果长时间没反应，请打开控制台查看错误日志)...<font></font></li>`
+                                text: `<li>${getI18n("fglTimeout", "Visit SURVEY DRAW")}<font></font></li>`
                             });
                             $.post('/draw/register-visit', {
                                     type: 'survey',
@@ -4230,7 +4514,7 @@
                                     survey.success();
                                     let video = fuc.echoLog({
                                         type: 'custom',
-                                        text: `<li>正在Visit VIDEO DRAW(如果长时间没反应，请打开控制台查看错误日志)...<font></font></li>`
+                                        text: `<li>${getI18n("fglTimeout", "Visit VIDEO DRAW")}<font></font></li>`
                                     });
                                     $.post('/draw/register-visit', {
                                             drawId: DashboardApp.draws.video.actual.id
@@ -4240,7 +4524,7 @@
                                             video.success();
                                             let stackpot = fuc.echoLog({
                                                 type: 'custom',
-                                                text: `<li>正在Visit STACKPOT(如果长时间没反应，请打开控制台查看错误日志)...<font></font></li>`
+                                                text: `<li>${getI18n("fglTimeout", "Visit STACKPOT")}<font></font></li>`
                                             });
                                             $.post('/draw/register-visit', {
                                                     type: 'stackpot',
@@ -4251,7 +4535,7 @@
                                                     stackpot.success();
                                                     fuc.echoLog({
                                                         type: 'custom',
-                                                        text: `<li>任务完成，正在刷新页面（如果页面没有自动刷新，请手动刷新查看结果）...<font></font></li>`
+                                                        text: `<li>${getI18n("fglComplete")}<font></font></li>`
                                                     });
                                                     location.href = '/#/draw/stackpot';
                                                     window.location.reload(true);
@@ -4293,7 +4577,7 @@
                     this.links = [];
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在获取任务信息...<font></font></li>`
+                        text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                     });
 
                     let tasksContainer = $('div.entry-content .entry-method');
@@ -4322,7 +4606,7 @@
                                         } else {
                                             fuc.echoLog({
                                                 type: "custom",
-                                                text: `<li><font class="error">获取Steam组信息失败！</font></li>`
+                                                text: `<li><font class="error">${getI18n("getGroupFailed")}</font></li>`
                                             });
                                         }
                                     } else {
@@ -4344,7 +4628,7 @@
                                     } else {
                                         fuc.echoLog({
                                             type: "custom",
-                                            text: `<li><font class="error">获取Steam组信息失败！</font></li>`
+                                            text: `<li><font class="error">${getI18n("getGroupFailed")}</font></li>`
                                         });
                                     }
                                 }
@@ -4369,7 +4653,7 @@
                     } else {
                         !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                            text: `<li><font class="warning">${getI18n("cannotRemove")}</font></li>`
                         });
                     }
                 }
@@ -4398,16 +4682,16 @@
                                 let title = $(twitter).find(".entry-method-title").text().trim();
                                 let status = fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li>正在做任务:${title}...<font></font></li>`
+                                    text: `<li>${getI18n("doing")}:${title}...<font></font></li>`
                                 });
                                 let followButton = $(twitter).find("a.twitter-button:contains(Follow)").attr("href");
                                 let retweetButton = $(twitter).find("a.twitter-button:contains(Retweet)").attr("href");
                                 let button = followButton || retweetButton;
                                 if (button) {
                                     window.open(button, "_blank");
-                                    status.warning("已打开任务页面");
+                                    status.warning(getI18n("openPage"));
                                 } else {
-                                    status.error("获取任务链接失败");
+                                    status.error(getI18n("getTaskUrlFailed"));
                                 }
                             }
                         }
@@ -4416,14 +4700,14 @@
                                 let title = $(task).find(".entry-method-title").text().trim();
                                 let status = fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li>正在做任务:${title}...<font></font></li>`
+                                    text: `<li>${getI18n("doing")}:${title}...<font></font></li>`
                                 });
                                 let button = $(task).find("a.btn-info:first").attr("href");
                                 if (button) {
                                     window.open(button, "_blank");
-                                    status.warning("已打开任务页面");
+                                    status.warning(getI18n("openPage"));
                                 } else {
-                                    status.error("获取任务链接失败");
+                                    status.error(getI18n("getTaskUrlFailed"));
                                 }
                             }
                         }
@@ -4439,20 +4723,20 @@
                             let title = $(other).find(".entry-method-title").text().trim();
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">未知任务类型:${title}</font></li>`
+                                text: `<li><font class="warning">${getI18n("unknowntype")}:${title}</font></li>`
                             });
                         } else {
                             let taskType = icon.attr("class").match(/fa-([\w]+)/) ? icon.attr("class").match(/fa-([\w]+)/)[1] : icon.attr("class");
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">未知任务类型:${taskType}</font></li>`
+                                text: `<li><font class="warning">${getI18n("unknowntype")}:${taskType}</font></li>`
                             });
                         }
                     }
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成！</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify(0);
                     });
@@ -4462,7 +4746,7 @@
                 if ($(".ng-scope[ng-include*=challenge]").is(":visible")) {
                     fuc.echoLog({
                         type: "custom",
-                        text: `<li><font class="error">触发人机验证，请完成验证后再点击"Verify"按钮验证任务！</font></li>`
+                        text: `<li><font class="error">${getI18n("notRobot")}</font></li>`
                     });
                     return 0;
                 }
@@ -4472,7 +4756,7 @@
                         let title = tasks.eq(i).find(".entry-method-title").text().trim();
                         let status = fuc.echoLog({
                             type: "custom",
-                            text: `<li>正在验证任务:${title}...<font></font></li>`
+                            text: `<li>${getI18n("verifyingTask")}:${title}...<font></font></li>`
                         });
                         tasks.eq(i).find("a.enter-link")[0].click();
                         let enterBtn = tasks.eq(i).find(".form-actions.center .btn-primary:contains(Continue)").removeAttr("disabled");
@@ -4495,7 +4779,7 @@
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="success">所有任务已完成，</font><font class="warning">没完成的任务请手动完成！</font></li>`
+                        text: `<li><font class="success">${getI18n("allTasksComplete")}</font><font class="warning">${getI18n("finishSelf")}</font></li>`
                     });
                 }
             },
@@ -4513,7 +4797,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -4526,7 +4810,7 @@
                     let title = $(links[i]).find(".entry-method-title").text().trim();
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在做任务:${title}...<font></font></li>`
+                        text: `<li>${getI18n("doing")}:${title}...<font></font></li>`
                     });
                     let taskTime = $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text();
                     if (taskTime) {
@@ -4554,7 +4838,7 @@
                             };
                         }
                     } else {
-                        status.error("获取浏览时间失败");
+                        status.error(getI18n("getVisitTimeFailed"));
                     }
                 } else {
                     r(1);
@@ -4580,9 +4864,9 @@
             checkLogin: function() {},
             checkLeft: function(ui) {
                 if ($(".massive-message:contains(ended)").is(":visible")) {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -4617,7 +4901,7 @@
             get_tasks: function() {
                 let status = fuc.echoLog({
                     type: 'custom',
-                    text: `<li>正在获取任务信息...<font></font></li>`
+                    text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                 });
                 let giveawayTasks = $("#GiveawayTasks button");
                 for (let task of giveawayTasks) {
@@ -4632,13 +4916,13 @@
                         } else {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="error">获取${$(task).text()}任务id失败!</font></li>`
+                                text: `<li><font class="error">${getI18n("getTaskIdFailed", $(task).text())}</font></li>`
                             });
                         }
                     } else {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="error">获取${$(task).text()}任务id失败!</font></li>`
+                            text: `<li><font class="error">${getI18n("getTaskIdFailed", $(task).text())}</font></li>`
                         });
                     }
                 }
@@ -4648,7 +4932,7 @@
                 } else {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="warning">没有检测到可以自动完成的任务!</font></li>`
+                        text: `<li><font class="warning">${getI18n("noAutoFinish")}</font></li>`
                     });
                 }
 
@@ -4669,13 +4953,13 @@
                 if (end) {
                     fuc.echoLog({
                         type: 'custom',
-                        text: `<li><font class="success">所有任务已完成</font>，<font class="warning">没完成的请手动完成！</font></li>`
+                        text: `<li><font class="success">${getI18n("allTasksComplete")}</font>，<font class="warning">${getI18n("finishSelf")}</font></li>`
                     });
                 } else {
                     let task = arr[i];
                     let status = fuc.echoLog({
                         type: "custom",
-                        text: `<li>正在做任务${task.text}...<font></font></li>`
+                        text: `<li>${getI18n("doing")}${task.text}...<font></font></li>`
                     });
                     new Promise(resolve => {
                         fuc.httpRequest({
@@ -4730,7 +5014,7 @@
                                                             status
                                                         });
                                                     } else {
-                                                        status.error("Error:获取任务链接失败(2)");
+                                                        status.error("Error:" + getI18n("getUrlFailed", "2"));
                                                         resolve(0);
                                                     }
                                                 } else {
@@ -4742,7 +5026,7 @@
                                             status
                                         });
                                     } else {
-                                        status.error("Error:获取任务链接失败(1)");
+                                        status.error("Error:" + getI18n("getUrlFailed", "1"));
                                         resolve(0);
                                     }
                                 } else {
@@ -4770,9 +5054,9 @@
                     if ($("#keysAvailable").length > 0) {
                         clearInterval(checkLeft);
                         if ($("#keysAvailable").text() === '0') {
-                            ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                                confirmButtonText: '确定',
-                                cancelButtonText: '取消',
+                            ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                                confirmButtonText: getI18n("confirm"),
+                                cancelButtonText: getI18n("cancel"),
                                 type: 'warning',
                                 center: true
                             }).then(() => {
@@ -4809,7 +5093,7 @@
                     let pro = [];
                     let status = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>正在获取任务信息...<font></font></li>`
+                        text: `<li>${getI18n("getTasksInfo")}<font></font></li>`
                     });
 
                     let tasksContainer = $('#usl>div');
@@ -4864,7 +5148,7 @@
                             if (this.tasks.length === 0) {
                                 fuc.echoLog({
                                     type: 'custom',
-                                    text: `<li><font class="success">所有任务已完成！</font></li>`
+                                    text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                                 });
                                 if (this.conf.fuck.verify) this.verify();
                             } else {
@@ -4873,7 +5157,7 @@
                         } else {
                             !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="warning">没有可以移除的任务！</font></li>`
+                                text: `<li><font class="warning">${getI18n("cannotRemove")}</font></li>`
                             });
                         }
                     });
@@ -4912,13 +5196,13 @@
                     for (let other of others) {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="warning">未知任务类型:${$(other).attr('class')}</font></li>`
+                            text: `<li><font class="warning">${getI18n("unknowntype")}:${$(other).attr('class')}</font></li>`
                         });
                     }
                     Promise.all(pro).finally(resolve => {
                         fuc.echoLog({
                             type: 'custom',
-                            text: `<li><font class="success">所有任务已完成</font></li>`
+                            text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                         });
                         if (this.conf.fuck.verify) this.verify();
                     });
@@ -4943,7 +5227,7 @@
                         Promise.all(pro).finally(data => {
                             fuc.echoLog({
                                 type: 'custom',
-                                text: `<li><font class="success">所有任务已完成！</font></li>`
+                                text: `<li><font class="success">${getI18n("allTasksComplete")}</font></li>`
                             });
                         });
                     });
@@ -4984,9 +5268,9 @@
             checkLeft: function(ui) {
                 let leftKey = $("span:contains(Осталось ключей)").text().match(/[\d]+/);
                 if (!(leftKey && parseInt(leftKey[0]) > 0)) {
-                    ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    ui.$confirm(getI18n("noKeysLeft"), getI18n("notice"), {
+                        confirmButtonText: getI18n("confirm"),
+                        cancelButtonText: getI18n("cancel"),
                         type: 'warning',
                         center: true
                     }).then(() => {
@@ -5914,7 +6198,7 @@
                 new Vue({
                     el: '#freegamelottery',
                     data: {
-                        header: 'freegamelottery网站设置',
+                        header: 'freegamelottery' + getI18n("websiteSetting"),
                         checked: GM_getValue('conf') ? GM_getValue('conf').freegamelottery ? GM_getValue('conf').freegamelottery.load ? true : false : false : false,
                         fuck: {
                             checkAll: fuckOptions.length === checkedFucks.length,
@@ -5945,14 +6229,14 @@
                 new Vue({
                     el: '#save',
                     data: {
-                        title: "保存设置"
+                        title: getI18n("saveSetting")
                     },
                     methods: {
                         save() {
                             let conf = fuc.creatConf();
                             GM_setValue('conf', conf);
                             this.$notify({
-                                title: '保存成功',
+                                title: getI18n("saveSuccess"),
                                 type: 'success'
                             });
                         }
@@ -5961,31 +6245,31 @@
                 new Vue({
                     el: '#reset',
                     data: {
-                        title: "重置所有设置"
+                        title: getI18n("resetSetting")
                     },
                     methods: {
                         reset() {
-                            this.$confirm('是否重置所有设置?', '提示', {
-                                confirmButtonText: '确定',
-                                cancelButtonText: '取消',
+                            this.$confirm(getI18n("resetSettingNotice"), getI18n("notice"), {
+                                confirmButtonText: getI18n("confirm"),
+                                cancelButtonText: getI18n("cancel"),
                                 type: 'warning'
                             }).then(() => {
                                 GM_deleteValue('conf');
                                 if (!GM_getValue('conf')) {
                                     vueUi.$message({
                                         type: 'success',
-                                        message: '重置成功!'
+                                        message: getI18n("resetSettingSuccess")
                                     });
                                 } else {
                                     vueUi.$message({
                                         type: 'error',
-                                        message: '重置失败!'
+                                        message: getI18n("resetSettingFailed")
                                     });
                                 }
                             }).catch(() => {
                                 vueUi.$message({
                                     type: 'info',
-                                    message: '已取消重置'
+                                    message: getI18n("resetSettingCancel")
                                 });
                             });
                         }
@@ -5994,13 +6278,13 @@
                 let download = new Vue({
                     el: '#download',
                     data: {
-                        title: "下载设置文件"
+                        title: getI18n("downloadSetting")
                     },
                     methods: {
                         download() {
                             let msg = vueUi.$message({
                                 type: 'info',
-                                message: '正在处理设置...'
+                                message: getI18n("processSetting")
                             });
                             let conf = fuc.creatConf();
                             let creatFile = new FileReader();
@@ -6012,7 +6296,7 @@
                                 msg.close();
                                 vueUi.$message({
                                     type: 'error',
-                                    message: '创建下载链接失败！'
+                                    message: getI18n("creatUrlFailed")
                                 });
                             };
                             creatFile.readAsDataURL(new File([JSON.stringify(conf, null, 4)], 'setting.conf.txt'));
@@ -6022,7 +6306,7 @@
                 new Vue({
                     el: '#upload2',
                     data: {
-                        title: "加载设置文件",
+                        title: getI18n("loadSetting"),
                         multiple: false,
                         sfl: false,
                         accept: "json",
@@ -6032,7 +6316,7 @@
                         upload(file) {
                             let msg = vueUi.$message({
                                 type: 'info',
-                                message: '正在读取设置文件...'
+                                message: getI18n("readSetting")
                             });
                             if (window.FileReader) {
                                 let reader = new FileReader();
@@ -6041,23 +6325,23 @@
                                     msg.close();
                                     let cMsg = vueUi.$message({
                                         type: 'success',
-                                        message: '设置文件读取完成！'
+                                        message: getI18n("readSettingComplete")
                                     });
                                     try {
                                         GM_setValue("conf", JSON.parse(reader.result));
                                         cMsg.close();
                                         vueUi.$message({
                                             type: 'success',
-                                            message: '设置加载完成！'
+                                            message: getI18n("loadSettingComplete")
                                         });
                                         location.reload();
                                     } catch (e) {
                                         cMsg.close();
                                         vueUi.$message({
                                             type: 'error',
-                                            message: '设置加载失败！'
+                                            message: `${getI18n("loadSettingFailed")}！`
                                         });
-                                        if (debug) console.log("设置加载失败：", e);
+                                        if (debug) console.log(`${getI18n("loadSettingFailed")}: `, e);
                                     }
                                 };
                                 reader.onerror = (e) => {
@@ -6065,7 +6349,7 @@
                                     msg.close();
                                     vueUi.$message({
                                         type: 'error',
-                                        message: '读取设置文件失败！'
+                                        message: getI18n("readSettingFailed")
                                     });
                                 };
                                 reader.readAsText(file);
@@ -6074,15 +6358,15 @@
                                 vueUi.$message({
                                     type: 'warning',
                                     duration: 5000,
-                                    message: '当前浏览器不支持直接读取文件，已触发备用方案！'
+                                    message: getI18n("notSupport")
                                 });
                                 this.$msgbox({
-                                        title: '请将设置文件里的内容复制到下面！',
+                                        title: getI18n("copySetting"),
                                         type: "info",
                                         showClose: false,
                                         showCancelButton: true,
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
+                                        confirmButtonText: getI18n("confirm"),
+                                        cancelButtonText: getI18n("cancel"),
                                         closeOnClickModal: false,
                                         closeOnPressEscape: false,
                                         closeOnHashChange: false,
@@ -6096,29 +6380,29 @@
                                         if (debug) console.log(value);
                                         let cMsg = vueUi.$message({
                                             type: 'info',
-                                            message: '正在加载设置...'
+                                            message: getI18n("loadSettingText")
                                         });
                                         try {
                                             GM_setValue("conf", JSON.parse(value));
                                             cMsg.close();
                                             vueUi.$message({
                                                 type: 'success',
-                                                message: '设置加载完成！'
+                                                message: getI18n("loadSettingComplete")
                                             });
                                             location.reload();
                                         } catch (e) {
                                             cMsg.close();
                                             vueUi.$message({
                                                 type: 'error',
-                                                message: '设置加载失败！'
+                                                message: `${getI18n("loadSettingFailed")}！`
                                             });
-                                            if (debug) console.log("设置加载失败：", e);
+                                            if (debug) console.log(`${getI18n("loadSettingFailed")}: `, e);
                                         }
                                     })
                                     .catch(action => {
                                         vueUi.$message({
                                             type: 'info',
-                                            message: '已取消'
+                                            message: getI18n("cancelled")
                                         });
                                     });
                             }
@@ -6133,7 +6417,7 @@
                 new Vue({
                     el: '#opiumpulses',
                     data: {
-                        header: 'opiumpulses网站设置',
+                        header: 'opiumpulses' + getI18n("websiteSetting"),
                         checked: GM_getValue('conf') ? GM_getValue('conf').opiumpulses ? GM_getValue('conf').opiumpulses.load ? true : false : false : false,
                         maxPoint: maxPoint,
                         openDelay: 100,
@@ -6184,7 +6468,7 @@
                     vueUi.$message({
                         type: "error",
                         duration: 0,
-                        message: `加载公告失败${data.statusText||"，详情请查看控制台"}！`,
+                        message: `${getI18n("loadAnnouncementFailed")}${data.statusText || getI18n("checkConsole")}！`,
                         showClose: true
                     });
                     console.error(data);
@@ -6193,7 +6477,7 @@
                 vueUi.$message({
                     type: "error",
                     duration: 0,
-                    message: `加载公告失败，详情请查看控制台！`,
+                    message: `${getI18n("loadAnnouncementFailed") + getI18n("checkConsole")}`,
                     showClose: true
                 });
                 console.error(error);
@@ -6289,7 +6573,7 @@
                     buttons: [{
                             id: 'fuck-task',
                             text: website.setting.fuckText || 'FuckTask',
-                            title: website.setting.fuckTitle || '一键做任务+验证',
+                            title: website.setting.fuckTitle || getI18n("fuckBtnTitle"),
                             show: website.setting.fuck,
                             click: () => {
                                 website.fuck(btnArea);
@@ -6298,7 +6582,7 @@
                         {
                             id: 'verify-task',
                             text: website.setting.verifyText || 'Verify',
-                            title: website.setting.verifyTitle || '一键验证任务',
+                            title: website.setting.verifyTitle || getI18n("verifyBtnTitle"),
                             show: website.setting.verify,
                             click: () => {
                                 website.verify();
@@ -6307,7 +6591,7 @@
                         {
                             id: 'join-task',
                             text: website.setting.joinText || 'Join',
-                            title: website.setting.joinDes || '一键加组、关注鉴赏家、关注游戏、添加愿望单...',
+                            title: website.setting.joinDes || getI18n("joinBtnTitle"),
                             show: website.setting.join,
                             click: () => {
                                 website.join();
@@ -6316,7 +6600,7 @@
                         {
                             id: 'remove-task',
                             text: website.setting.removeText || 'Remove',
-                            title: website.setting.removeTitle || '一键退组、取关鉴赏家、取关游戏、移除愿望单...',
+                            title: website.setting.removeTitle || getI18n("removeBtnTitle"),
                             show: website.setting.remove,
                             click: () => {
                                 website.remove();
@@ -6326,7 +6610,7 @@
                     drawerBtn: {
                         id: 'show-logs',
                         text: !showLogs ? 'ShowLogs' : 'HideLogs',
-                        title: !showLogs ? '显示执行日志' : '隐藏执行日志',
+                        title: !showLogs ? getI18n("showLog") : getI18n("hideLog"),
                         show: !!showLogs
                     },
                 },
@@ -6334,13 +6618,13 @@
                     toggleThisDiv() {
                         if (this.show) {
                             this.icon = "el-icon-arrow-left";
-                            this.title = "展开";
+                            this.title = getI18n("show");
                             $("#fuck-task-btn").animate({
                                 width: '0',
                             });
                         } else {
                             this.icon = "el-icon-arrow-right";
-                            this.title = "收起";
+                            this.title = getI18n("hide");
                             $("#fuck-task-btn").animate({
                                 width: '110',
                             });
@@ -6350,13 +6634,13 @@
                     toggle() {
                         if (this.drawerBtn.show) {
                             this.drawerBtn.text = 'ShowLogs';
-                            this.drawerBtn.title = '显示执行日志';
+                            this.drawerBtn.title = getI18n("showLog");
                             $(".fuck-task-logs").animate({
                                 right: '-100%'
                             }, 'fast');
                         } else {
                             this.drawerBtn.text = 'HideLogs';
-                            this.drawerBtn.title = '隐藏执行日志';
+                            this.drawerBtn.title = getI18n("hideLog");
                             $(".fuck-task-logs").animate({
                                 right: '16px'
                             }, 'fast');
@@ -6368,7 +6652,7 @@
             let infoArea = new Vue({
                 el: '#fuck-task-info',
             }).$notify({
-                title: '任务执行日志',
+                title: getI18n("taskLog"),
                 iconClass: '',
                 duration: 0,
                 position: 'bottom-right',
@@ -6383,23 +6667,23 @@
   <el-button :icon="icon" :title="title" @click="checkUpdate" circle></el-button>
 </el-badge>
 <el-badge is-dot class="item" :hidden="settingHidden">
-  <el-button icon="el-icon-setting" title="设置" @click="setting" circle></el-button>
+  <el-button icon="el-icon-setting" title="${getI18n("setting")}" @click="setting" circle></el-button>
 </el-badge>
 <el-badge is-dot class="item" :hidden="announcementHidden">
-  <el-button :icon="announcementIcon" title="查看更新内容" @click="updateText" circle></el-button>
+  <el-button :icon="announcementIcon" title="${getI18n("visitUpdateText")}" @click="updateText" circle></el-button>
 </el-badge>
 <el-badge is-dot class="item" :hidden="otherHidden">
-  <el-button icon="el-icon-brush" title="清理缓存" @click="clearTemp" circle></el-button>
+  <el-button icon="el-icon-brush" title="${getI18n("cleanCache")}" @click="clearTemp" circle></el-button>
 </el-badge>
 <el-badge is-dot class="item" :hidden="otherHidden">
-  <el-button icon="el-icon-s-promotion" title="提交建议/BUG" @click="updateBug" circle></el-button>
+  <el-button icon="el-icon-s-promotion" title="${getI18n("feedback")}" @click="updateBug" circle></el-button>
 </el-badge>
 </h2>
 `);
             let extraBtn = new Vue({
                 el: "#extraBtn",
                 data: {
-                    title: "检查更新",
+                    title: getI18n("checkUpdate"),
                     icon: "el-icon-refresh",
                     hidden: true,
                     settingHidden: !!GM_getValue('conf'),
@@ -6423,11 +6707,11 @@
                     clearTemp() {
                         let status = fuc.echoLog({
                             type: 'custom',
-                            text: `<li>正在清理缓存...<font></font></li>`
+                            text: `<li>${getI18n("cleaning")}<font></font></li>`
                         });
                         let listValues = GM_listValues();
                         for (let value of listValues) {
-                            if (value !== "conf") GM_deleteValue(value);
+                            if (value !== "conf" && value !== "language") GM_deleteValue(value);
                         }
                         status.success();
                     }
@@ -6453,18 +6737,31 @@
             }
         }
 
-        GM_registerMenuCommand('脚本说明', () => {
+        GM_registerMenuCommand(getI18n("readme"), () => {
             window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank');
         });
-        GM_registerMenuCommand('更新Steam信息', () => {
+        GM_registerMenuCommand(getI18n("updateSteamInfo"), () => {
             new Promise(resolve => {
                 fuc.updateSteamInfo(resolve, "all", true);
             }).then(r => {
                 fuc.echoLog({
                     type: 'custom',
-                    text: `<li><font class="success">Steam信息更新完成</font></li>`
+                    text: `<li><font class="success">${getI18n("updateSteamInfoComplete")}</font></li>`
                 });
             });
+        });
+        GM_registerMenuCommand("Language", () => {
+            vueUi.$msgbox({
+                title: getI18n("language") + " : " + language,
+                message: `<select id="auto-task-language"><option value="auto">${getI18n("auto")}</option><option value="zh-cn">简体中文</option><option value="en">English</option></select>`,
+                dangerouslyUseHTMLString: true,
+                confirmButtonText: getI18n("confirm"),
+                cancelButtonText: getI18n("cancel"),
+                type: 'info'
+            }).then(value => {
+                if (value) GM_setValue("language", $("#auto-task-language option:selected").val());
+                language = getLanguage();
+            }).catch(err => {});
         });
 
     } catch (e) {
@@ -6472,7 +6769,8 @@
             vueUi.$message({
                 type: "error",
                 duration: 0,
-                message: "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
+                message: "getI18n("
+                jsError ")",
                 showClose: true
             });
         }, 500);
