@@ -1,3 +1,6 @@
+
+[English Document](https://github.com/HCLonely/auto-task/blob/master/README_EN.md)
+
 # 1.适用网站
 
 * [giveaway.su](https://giveaway.su/)
